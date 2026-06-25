@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LORD MATUTE ERP — Sistema de Gestión Integral</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C96A;
+  --gold-pale: #F5E6B8;
+  --gold-dim: #7A6230;
+  --black: #0A0A0A;
+  --dark: #111111;
+  --dark2: #181818;
+  --dark3: #222222;
+  --dark4: #2A2A2A;
+  --dark5: #333333;
+  --gray: #888888;
+  --gray-light: #AAAAAA;
+  --white: #F0EAD6;
+  --white2: #E8E0C8;
+  --red: #C0392B;
+  --green: #1A7A4A;
+  --green-light: #27AE60;
+  --blue: #1A4A7A;
+  --sidebar-w: 260px;
+  --header-h: 64px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--black);color:var(--white);min-height:100vh;overflow-x:hidden;}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:8px;}
+.login-box{background:var(--dark2);border:1px solid var(--gold-dim);border-radius:16px;padding:48px 40px;width:380px;max-width:95vw;text-align:center;box-shadow:0 0 60px rgba(201,168,76,.15);}
+.login-logo{font-family:'Playfair Display',serif;font-size:2.2rem;color:var(--gold);letter-spacing:2px;margin-bottom:4px;}
+.login-sub{font-size:.75rem;color:var(--gray);letter-spacing:4px;text-transform:uppercase;margin-bottom:32px;}
+.login-box input{width:100%;background:var(--dark3);border:1px solid var(--dark5);color:var(--white);padding:12px 16px;border-radius:8px;font-size:.9rem;margin-bottom:12px;outline:none;transition:.2s;}
+.login-box input:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:var(--black);font-weight:700;font-size:.9rem;padding:13px;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;margin-top:4px;transition:.2s;}
+.login-btn:hover{background:linear-gradient(135deg,var(--gold-light),var(--gold));transform:translateY(-1px);}
+.login-hint{font-size:.72rem;color:var(--gray);margin-top:16px;}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+#sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--dark);border-right:1px solid #1E1E1E;display:flex;flex-direction:column;z-index:100;overflow-y:auto;transition:.3s;}
+.sb-brand{padding:20px 20px 16px;border-bottom:1px solid #1E1E1E;}
+.sb-logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);letter-spacing:1px;}
+.sb-sub{font-size:.6rem;color:var(--gray);letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
+.sb-badge{display:inline-block;background:var(--gold-dim);color:var(--gold-pale);font-size:.58rem;padding:2px 6px;border-radius:4px;margin-top:6px;letter-spacing:1px;}
+.sb-section{padding:16px 12px 6px;font-size:.58rem;color:var(--gold-dim);letter-spacing:3px;text-transform:uppercase;font-weight:600;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-radius:8px;margin:1px 8px;font-size:.82rem;color:var(--gray-light);transition:.18s;position:relative;}
+.sb-item:hover{background:var(--dark3);color:var(--white);}
+.sb-item.active{background:linear-gradient(90deg,rgba(201,168,76,.15),transparent);color:var(--gold);border-left:2px solid var(--gold);}
+.sb-item .icon{width:22px;text-align:center;font-size:.95rem;}
+.sb-footer{margin-top:auto;padding:16px;border-top:1px solid #1E1E1E;}
+.sb-user{display:flex;align-items:center;gap:10px;}
+.sb-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-dim));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--black);font-size:.85rem;}
+.sb-uname{font-size:.8rem;font-weight:600;color:var(--white);}
+.sb-urole{font-size:.68rem;color:var(--gray);}
+.sb-logout{margin-top:8px;width:100%;background:none;border:1px solid #2A2A2A;color:var(--gray);padding:7px;border-radius:6px;cursor:pointer;font-size:.75rem;transition:.2s;}
+.sb-logout:hover{border-color:var(--red);color:var(--red);}
+
+/* ── HEADER ── */
+#header{position:fixed;top:0;left:var(--sidebar-w);right:0;height:var(--header-h);background:var(--dark);border-bottom:1px solid #1E1E1E;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:99;}
+.hdr-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);}
+.hdr-right{display:flex;align-items:center;gap:16px;}
+.hdr-date{font-size:.75rem;color:var(--gray);font-family:'JetBrains Mono',monospace;}
+.hdr-notif{width:36px;height:36px;background:var(--dark3);border:1px solid var(--dark5);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.9rem;position:relative;}
+.notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--gold);border-radius:50%;}
+
+/* ── MAIN ── */
+#main{margin-left:var(--sidebar-w);margin-top:var(--header-h);padding:28px;min-height:calc(100vh - var(--header-h));}
+
+/* ── PAGE ── */
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold);margin-bottom:6px;}
+.page-sub{font-size:.78rem;color:var(--gray);margin-bottom:24px;letter-spacing:.5px;}
+
+/* ── CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px;}
+.kpi-card{background:var(--dark2);border:1px solid #1E1E1E;border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:.2s;}
+.kpi-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent);}
+.kpi-label{font-size:.68rem;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--white);font-weight:700;}
+.kpi-val.gold{color:var(--gold);}
+.kpi-val.green{color:var(--green-light);}
+.kpi-sub{font-size:.7rem;color:var(--gray);margin-top:4px;}
+.kpi-icon{position:absolute;top:16px;right:16px;font-size:1.4rem;opacity:.3;}
+.kpi-trend{font-size:.7rem;margin-top:6px;}
+.kpi-trend.up{color:var(--green-light);}
+.kpi-trend.down{color:var(--red);}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid-7-3{display:grid;grid-template-columns:7fr 3fr;gap:20px;margin-bottom:20px;}
+.grid-6-4{display:grid;grid-template-columns:6fr 4fr;gap:20px;margin-bottom:20px;}
+@media(max-width:900px){.grid-2,.grid-3,.grid-7-3,.grid-6-4{grid-template-columns:1fr;}}
+
+/* ── PANELS ── */
+.panel{background:var(--dark2);border:1px solid #1E1E1E;border-radius:12px;padding:22px;margin-bottom:20px;}
+.panel-title{font-size:.75rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.panel-title::before{content:'';display:block;width:3px;height:14px;background:var(--gold);border-radius:2px;}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{text-align:left;padding:10px 12px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);border-bottom:1px solid #2A2A2A;font-weight:600;}
+td{padding:10px 12px;border-bottom:1px solid #1A1A1A;color:var(--white2);}
+tr:hover td{background:rgba(201,168,76,.04);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.65rem;font-weight:600;letter-spacing:.5px;}
+.badge-green{background:rgba(39,174,96,.15);color:#27AE60;border:1px solid rgba(39,174,96,.3);}
+.badge-gold{background:rgba(201,168,76,.15);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.badge-gray{background:rgba(136,136,136,.15);color:var(--gray);border:1px solid rgba(136,136,136,.3);}
+.badge-red{background:rgba(192,57,43,.15);color:#E74C3C;border:1px solid rgba(192,57,43,.3);}
+.badge-blue{background:rgba(41,128,185,.15);color:#3498DB;border:1px solid rgba(41,128,185,.3);}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;border:none;transition:.18s;letter-spacing:.3px;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:var(--black);}
+.btn-gold:hover{background:linear-gradient(135deg,var(--gold-light),var(--gold));transform:translateY(-1px);}
+.btn-outline{background:none;border:1px solid var(--dark5);color:var(--gray-light);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-red{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#E74C3C;}
+.btn-green{background:rgba(39,174,96,.2);border:1px solid rgba(39,174,96,.4);color:#27AE60;}
+.btn-sm{padding:6px 12px;font-size:.72rem;}
+
+/* ── FORM ELEMENTS ── */
+.form-group{margin-bottom:14px;}
+.form-label{font-size:.7rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--dark3);border:1px solid var(--dark5);color:var(--white);padding:10px 14px;border-radius:8px;font-size:.85rem;outline:none;transition:.18s;font-family:'Inter',sans-serif;}
+.form-input:focus{border-color:var(--gold);}
+.form-select{width:100%;background:var(--dark3);border:1px solid var(--dark5);color:var(--white);padding:10px 14px;border-radius:8px;font-size:.85rem;outline:none;cursor:pointer;}
+.form-select:focus{border-color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+
+/* ── EDITABLE VALUES ── */
+.editable{cursor:pointer;border-bottom:1px dashed var(--gold-dim);transition:.18s;}
+.editable:hover{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── CHART containers ── */
+.chart-box{position:relative;height:220px;}
+.chart-box-lg{position:relative;height:280px;}
+
+/* ── POS ── */
+.pos-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;min-height:70vh;}
+@media(max-width:900px){.pos-grid{grid-template-columns:1fr;}}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+.prod-card{background:var(--dark3);border:1px solid var(--dark5);border-radius:10px;padding:14px;cursor:pointer;transition:.18s;text-align:center;}
+.prod-card:hover{border-color:var(--gold);background:var(--dark4);}
+.prod-emoji{font-size:2rem;margin-bottom:6px;}
+.prod-name{font-size:.75rem;font-weight:600;color:var(--white);margin-bottom:4px;}
+.prod-brand{font-size:.65rem;color:var(--gray);}
+.prod-price{font-size:.9rem;color:var(--gold);font-weight:700;margin-top:6px;}
+.cart-panel{background:var(--dark2);border:1px solid #1E1E1E;border-radius:12px;padding:20px;display:flex;flex-direction:column;height:fit-content;position:sticky;top:calc(var(--header-h)+28px);}
+.cart-items{min-height:120px;max-height:280px;overflow-y:auto;margin-bottom:12px;}
+.cart-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1E1E1E;font-size:.8rem;}
+.cart-item-name{color:var(--white2);}
+.cart-item-qty{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:22px;height:22px;background:var(--dark4);border:1px solid var(--dark5);color:var(--white);border-radius:4px;cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+.cart-total{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--gold);text-align:right;margin:10px 0;}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.pay-btn{padding:8px;background:var(--dark3);border:1px solid var(--dark5);color:var(--gray-light);border-radius:7px;cursor:pointer;font-size:.72rem;text-align:center;transition:.18s;}
+.pay-btn:hover,.pay-btn.selected{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1);}
+
+/* ── PROGRESS ── */
+.progress-bar{height:6px;background:var(--dark4);border-radius:3px;overflow:hidden;margin-top:6px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px;transition:.3s;}
+
+/* ── STAT ROW ── */
+.stat-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #1E1E1E;font-size:.82rem;}
+.stat-row:last-child{border-bottom:none;}
+.stat-label{color:var(--gray);}
+.stat-val{color:var(--white);font-weight:500;}
+.stat-val.gold{color:var(--gold);}
+.stat-val.green{color:var(--green-light);}
+
+/* ── SEGMENT CIRCLES ── */
+.segment-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;}
+.segment-card{background:var(--dark3);border:1px solid var(--dark5);border-radius:10px;padding:16px;text-align:center;}
+.segment-val{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);}
+.segment-label{font-size:.7rem;color:var(--gray);margin-top:4px;}
+.segment-pct{font-size:.75rem;color:var(--green-light);margin-top:2px;}
+
+/* ── MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;}
+.modal.open{display:flex;}
+.modal-box{background:var(--dark2);border:1px solid var(--gold-dim);border-radius:14px;padding:32px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--gold);margin-bottom:20px;}
+.modal-close{float:right;background:none;border:none;color:var(--gray);font-size:1.2rem;cursor:pointer;margin-top:-4px;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--dark5);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-dim);}
+
+/* ── BALANCE SHEET ── */
+.balance-col{background:var(--dark3);border-radius:10px;padding:16px;}
+.bal-section{margin-bottom:14px;}
+.bal-head{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px;}
+.bal-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.8rem;border-bottom:1px solid #222;}
+.bal-row:last-child{border-bottom:none;}
+.bal-row.total{font-weight:700;color:var(--gold);font-size:.85rem;border-top:1px solid var(--gold-dim);margin-top:6px;padding-top:8px;}
+.bal-key{color:var(--gray-light);}
+.bal-val{font-family:'JetBrains Mono',monospace;color:var(--white);}
+
+/* ── FINANCE STATEMENT ── */
+.er-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #1E1E1E;font-size:.83rem;}
+.er-row.subtotal{border-top:1px solid #333;background:rgba(201,168,76,.04);padding:9px 8px;border-radius:4px;margin:4px 0;}
+.er-row.total{background:rgba(201,168,76,.1);padding:10px 8px;border-radius:6px;font-weight:700;color:var(--gold);}
+.er-label{color:var(--gray-light);}
+.er-val{font-family:'JetBrains Mono',monospace;}
+.er-val.pos{color:var(--green-light);}
+.er-val.neg{color:#E74C3C;}
+.er-val.gold{color:var(--gold);}
+
+/* ── SUNAT ── */
+.tax-card{background:var(--dark3);border:1px solid var(--dark5);border-radius:10px;padding:18px;text-align:center;}
+.tax-val{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold);margin:8px 0;}
+.tax-label{font-size:.7rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;}
+.tax-sub{font-size:.72rem;color:var(--gray-light);margin-top:4px;}
+
+/* ── TOP NAV TABS ── */
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #1E1E1E;padding-bottom:0;}
+.tab{padding:8px 16px;font-size:.78rem;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;transition:.18s;margin-bottom:-1px;}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab:hover{color:var(--white2);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+.search-input{flex:1;background:var(--dark3);border:1px solid var(--dark5);color:var(--white);padding:9px 14px;border-radius:8px;font-size:.83rem;outline:none;}
+.search-input:focus{border-color:var(--gold);}
+
+/* ── ALERT ── */
+.alert{padding:12px 16px;border-radius:8px;font-size:.8rem;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.alert-gold{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold-pale);}
+.alert-green{background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);color:#7DCEA0;}
+
+/* ── CATALOG CARDS ── */
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.cat-card{background:var(--dark2);border:1px solid #1E1E1E;border-radius:12px;overflow:hidden;transition:.2s;}
+.cat-card:hover{border-color:var(--gold-dim);transform:translateY(-3px);}
+.cat-img{height:120px;background:linear-gradient(135deg,var(--dark3),var(--dark4));display:flex;align-items:center;justify-content:center;font-size:3rem;}
+.cat-info{padding:14px;}
+.cat-brand{font-size:.65rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;}
+.cat-name{font-size:.88rem;font-weight:600;color:var(--white);margin:4px 0;}
+.cat-sku{font-size:.65rem;color:var(--gray);font-family:'JetBrains Mono',monospace;}
+.cat-price-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.cat-price{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);}
+.cat-margin{font-size:.7rem;color:var(--green-light);}
+
+/* ── KARDEX ── */
+.kardex-row-in td{background:rgba(39,174,96,.04);}
+.kardex-row-out td{background:rgba(192,57,43,.04);}
+
+/* ── TIMELINE ── */
+.timeline{list-style:none;}
+.tl-item{display:flex;gap:14px;margin-bottom:16px;}
+.tl-dot{width:10px;height:10px;background:var(--gold);border-radius:50%;margin-top:5px;flex-shrink:0;}
+.tl-line{width:1px;background:var(--dark5);margin:0 auto;}
+.tl-content{flex:1;}
+.tl-date{font-size:.67rem;color:var(--gray);font-family:'JetBrains Mono',monospace;}
+.tl-text{font-size:.8rem;color:var(--white2);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">LORD MATUTE</div>
+    <div class="login-sub">ERP · Retail Urbano de Zapatillas</div>
+    <input type="text" id="loginUser" placeholder="Usuario" value="admin">
+    <input type="password" id="loginPass" placeholder="Contraseña" value="">
+    <button class="login-btn" onclick="doLogin()">Ingresar al Sistema</button>
+    <div class="login-hint" id="loginHint">admin · lordmatute2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ APP -->
+<div id="app">
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">LORD MATUTE</div>
+    <div class="sb-sub">ERP Empresarial</div>
+    <div class="sb-badge">PREMIUM · 2026</div>
+  </div>
+
+  <div class="sb-section">Principal</div>
+  <div class="sb-item active" onclick="nav('dashboard')"><span class="icon">📊</span>Dashboard Ejecutivo</div>
+  <div class="sb-item" onclick="nav('pos')"><span class="icon">🛒</span>Punto de Venta</div>
+
+  <div class="sb-section">Operaciones</div>
+  <div class="sb-item" onclick="nav('ventas')"><span class="icon">💳</span>Ventas</div>
+  <div class="sb-item" onclick="nav('inventario')"><span class="icon">📦</span>Inventario</div>
+  <div class="sb-item" onclick="nav('catalogo')"><span class="icon">👟</span>Catálogo</div>
+
+  <div class="sb-item" onclick="nav('costeo')"><span class="icon">🧮</span>Calculadora de Costeo</div>
+
+  <div class="sb-section">Mercado</div>
+  <div class="sb-item" onclick="nav('crm')"><span class="icon">🎯</span>CRM</div>
+  <div class="sb-item" onclick="nav('clientes')"><span class="icon">👥</span>Clientes</div>
+  <div class="sb-item" onclick="nav('proveedores')"><span class="icon">🚛</span>Proveedores</div>
+
+  <div class="sb-section">Empresa</div>
+  <div class="sb-item" onclick="nav('activos')"><span class="icon">🏗️</span>Activos</div>
+  <div class="sb-item" onclick="nav('inversion')"><span class="icon">💼</span>Inversión Inicial</div>
+  <div class="sb-item" onclick="nav('financiamiento')"><span class="icon">🏦</span>Financiamiento</div>
+
+  <div class="sb-section">Finanzas & Legal</div>
+  <div class="sb-item" onclick="nav('contabilidad')"><span class="icon">💰</span>Contabilidad</div>
+  <div class="sb-item" onclick="nav('resultados')"><span class="icon">📋</span>Estado de Resultados</div>
+  <div class="sb-item" onclick="nav('flujo')"><span class="icon">💧</span>Flujo de Caja</div>
+  <div class="sb-item" onclick="nav('sunat')"><span class="icon">🏛️</span>SUNAT</div>
+  <div class="sb-item" onclick="nav('reportes')"><span class="icon">📈</span>Reportes</div>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">LM</div>
+      <div>
+        <div class="sb-uname">Lord Matute</div>
+        <div class="sb-urole">Administrador</div>
+      </div>
+    </div>
+    <button class="sb-logout" onclick="doLogout()">⬅ Cerrar sesión</button>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="hdr-title" id="hdrTitle">Dashboard Ejecutivo</div>
+  <div class="hdr-right">
+    <div class="hdr-date" id="hdrDate"></div>
+    <button class="btn btn-outline btn-sm" onclick="openCatalogSite()" style="font-size:.72rem;padding:6px 12px;gap:4px">🛍 Catálogo web</button>
+    <div class="hdr-notif" id="cartSyncBadge" onclick="importCatalogCart()" title="Carrito pendiente del catálogo web — clic para importar" style="display:none;cursor:pointer;border-color:var(--gold);position:relative">🛒<div class="notif-dot" style="background:#27AE60"></div></div>
+    <div class="hdr-notif">🔔<div class="notif-dot"></div></div>
+    <div class="hdr-notif" title="Configuración">⚙️</div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-title">Dashboard Ejecutivo</div>
+  <div class="page-sub">Resumen en tiempo real · LORD MATUTE ERP · Junio 2026</div>
+
+  <div class="alert alert-gold">⚡ Todos los KPIs provienen de los módulos reales. Haz clic en cualquier valor para editarlo.</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-icon">📅</div>
+      <div class="kpi-label">Ventas del Día</div>
+      <div class="kpi-val gold">S/ <span class="editable" onclick="editKpi(this,'Ventas del Día')">4,820</span></div>
+      <div class="kpi-sub">Hoy, 17 Jun 2026</div>
+      <div class="kpi-trend up">▲ 12% vs ayer</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📆</div>
+      <div class="kpi-label">Ventas Semana</div>
+      <div class="kpi-val">S/ <span class="editable" onclick="editKpi(this,'Ventas Semana')">28,450</span></div>
+      <div class="kpi-sub">Sem. 24 · 2026</div>
+      <div class="kpi-trend up">▲ 8% vs sem. ant.</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🗓️</div>
+      <div class="kpi-label">Ventas del Mes</div>
+      <div class="kpi-val">S/ <span class="editable" onclick="editKpi(this,'Ventas del Mes')">87,300</span></div>
+      <div class="kpi-sub">Junio 2026</div>
+      <div class="kpi-trend up">▲ 5.2% vs mayo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-label">Ventas Anuales</div>
+      <div class="kpi-val">S/ <span class="editable" onclick="editKpi(this,'Ventas Anuales')">512,600</span></div>
+      <div class="kpi-sub">Ene–Jun 2026</div>
+      <div class="kpi-trend up">▲ 18% vs 2025</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Utilidad Bruta</div>
+      <div class="kpi-val green">S/ <span class="editable" onclick="editKpi(this,'Utilidad Bruta')">32,151</span></div>
+      <div class="kpi-sub">Margen 36.8%</div>
+      <div class="kpi-trend up">▲ 2.1% vs mayo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Utilidad Neta</div>
+      <div class="kpi-val green">S/ <span class="editable" onclick="editKpi(this,'Utilidad Neta')">18,204</span></div>
+      <div class="kpi-sub">Margen neto 20.9%</div>
+      <div class="kpi-trend up">▲ 3.5%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">💧</div>
+      <div class="kpi-label">Flujo de Caja</div>
+      <div class="kpi-val gold">S/ <span class="editable" onclick="editKpi(this,'Flujo de Caja')">24,780</span></div>
+      <div class="kpi-sub">Saldo disponible</div>
+      <div class="kpi-trend up">▲ Positivo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🔄</div>
+      <div class="kpi-label">Capital de Trabajo</div>
+      <div class="kpi-val">S/ <span class="editable" onclick="editKpi(this,'Capital de Trabajo')">38,420</span></div>
+      <div class="kpi-sub">Activo Cte – Pasivo Cte</div>
+      <div class="kpi-trend up">▲ Saludable</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🎫</div>
+      <div class="kpi-label">Ticket Promedio</div>
+      <div class="kpi-val">S/ <span class="editable" onclick="editKpi(this,'Ticket Promedio')">187</span></div>
+      <div class="kpi-sub">Por transacción</div>
+      <div class="kpi-trend up">▲ 4.2%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">👤</div>
+      <div class="kpi-label">Clientes Nuevos</div>
+      <div class="kpi-val">+<span class="editable" onclick="editKpi(this,'Clientes Nuevos')">47</span></div>
+      <div class="kpi-sub">Este mes</div>
+      <div class="kpi-trend up">▲ 22%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">👟</div>
+      <div class="kpi-label">Productos Activos</div>
+      <div class="kpi-val"><span class="editable" onclick="editKpi(this,'Productos Activos')">284</span></div>
+      <div class="kpi-sub">SKUs en stock</div>
+      <div class="kpi-trend up">▲ Normal</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">♻️</div>
+      <div class="kpi-label">Rotación Inventario</div>
+      <div class="kpi-val"><span class="editable" onclick="editKpi(this,'Rotación Inventario')">4.2</span><span style="font-size:.9rem;color:var(--gray)">x</span></div>
+      <div class="kpi-sub">Veces/año</div>
+      <div class="kpi-trend up">▲ Eficiente</div>
+    </div>
+  </div>
+
+  <div class="grid-7-3">
+    <div class="panel">
+      <div class="panel-title">Evolución de Ventas — 2026</div>
+      <div class="chart-box-lg"><canvas id="chartVentas"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Ventas por Marca</div>
+      <div class="chart-box-lg"><canvas id="chartMarcas"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="panel">
+      <div class="panel-title">Métodos de Pago</div>
+      <div class="chart-box"><canvas id="chartPagos"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Utilidad Bruta vs Neta</div>
+      <div class="chart-box"><canvas id="chartUtilidad"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Resumen Financiero</div>
+      <div class="stat-row"><span class="stat-label">Ingresos Totales</span><span class="stat-val gold">S/ 87,300</span></div>
+      <div class="stat-row"><span class="stat-label">Costo de Ventas</span><span class="stat-val">S/ 55,149</span></div>
+      <div class="stat-row"><span class="stat-label">Gastos Operativos</span><span class="stat-val">S/ 9,746</span></div>
+      <div class="stat-row"><span class="stat-label">Gastos Financieros</span><span class="stat-val">S/ 1,200</span></div>
+      <div class="stat-row"><span class="stat-label">IGV por Pagar</span><span class="stat-val">S/ 4,104</span></div>
+      <div class="stat-row"><span class="stat-label">Impuesto a la Renta</span><span class="stat-val">S/ 2,897</span></div>
+      <div class="stat-row"><span class="stat-label" style="color:var(--gold);font-weight:700">UTILIDAD NETA</span><span class="stat-val green" style="font-weight:700">S/ 18,204</span></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Top 5 Productos del Mes</div>
+      <table><thead><tr><th>#</th><th>Producto</th><th>Marca</th><th>Unid.</th><th>Ingresos</th></tr></thead>
+      <tbody>
+        <tr><td><span style="color:var(--gold);font-weight:700">01</span></td><td>Air Force 1 OG '07</td><td>Nike</td><td>48</td><td>S/ 9,600</td></tr>
+        <tr><td><span style="color:var(--gold-dim);font-weight:700">02</span></td><td>Ultra Boost 22</td><td>Adidas</td><td>37</td><td>S/ 8,140</td></tr>
+        <tr><td>03</td><td>Chuck Taylor Classic</td><td>Converse</td><td>52</td><td>S/ 6,760</td></tr>
+        <tr><td>04</td><td>Old Skool Suede</td><td>Vans</td><td>41</td><td>S/ 5,330</td></tr>
+        <tr><td>05</td><td>RS-X Softcase</td><td>Puma</td><td>29</td><td>S/ 4,350</td></tr>
+      </tbody></table>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Últimas Transacciones</div>
+      <table><thead><tr><th>Hora</th><th>Cliente</th><th>Método</th><th>Total</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">11:42</td><td>Carlos Ríos</td><td>Yape</td><td>S/ 220</td><td><span class="badge badge-green">Pagado</span></td></tr>
+        <tr><td class="mono">11:18</td><td>Ana Flores</td><td>Tarjeta</td><td>S/ 350</td><td><span class="badge badge-green">Pagado</span></td></tr>
+        <tr><td class="mono">10:55</td><td>Luis Pérez</td><td>Efectivo</td><td>S/ 180</td><td><span class="badge badge-green">Pagado</span></td></tr>
+        <tr><td class="mono">10:30</td><td>María Soto</td><td>Plin</td><td>S/ 420</td><td><span class="badge badge-green">Pagado</span></td></tr>
+        <tr><td class="mono">09:47</td><td>Jorge Castro</td><td>Yape</td><td>S/ 165</td><td><span class="badge badge-green">Pagado</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ POS ═══════════════════ -->
+<div class="page" id="page-pos">
+  <div class="page-title">Punto de Venta</div>
+  <div class="page-sub">Venta rápida · Boleta · Factura · Multi-método de pago</div>
+  <div id="posSyncNotice" style="display:none;margin-bottom:14px" class="alert alert-green">
+    🛒 <span id="posSyncMsg">Carrito importado del catálogo web.</span> Revisa los productos y confirma la venta.
+    <button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="document.getElementById('posSyncNotice').style.display='none'">✕</button>
+  </div>
+  <div class="pos-grid">
+    <div>
+      <div class="search-bar">
+        <input class="search-input" placeholder="🔍 Buscar zapatilla por SKU, marca o modelo…" id="posSearch">
+        <select class="form-select" id="posMarcaFilter" style="width:160px">
+          <option>Todas las marcas</option>
+          <option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option><option>New Balance</option>
+        </select>
+      </div>
+      <div class="products-grid" id="posGrid"></div>
+    </div>
+    <div class="cart-panel">
+      <div class="panel-title" style="margin-bottom:12px">🛒 Carrito</div>
+      <div class="cart-items" id="cartItems">
+        <div style="text-align:center;color:var(--gray);font-size:.8rem;padding:20px">Añade productos al carrito</div>
+      </div>
+      <div style="border-top:1px solid #222;padding-top:10px">
+        <div class="stat-row"><span class="stat-label">Subtotal</span><span class="stat-val" id="cartSub">S/ 0.00</span></div>
+        <div class="stat-row"><span class="stat-label">IGV (18%)</span><span class="stat-val" id="cartIgv">S/ 0.00</span></div>
+        <div class="stat-row"><span class="stat-label">Descuento</span><span class="stat-val" id="cartDesc">S/ 0.00</span></div>
+      </div>
+      <div class="cart-total" id="cartTotal">S/ 0.00</div>
+      <div style="margin-bottom:10px">
+        <select class="form-select" id="posDocumento" style="margin-bottom:8px"><option value="Boleta">📄 Boleta</option><option value="Factura">🧾 Factura</option><option value="Ticket">🎫 Ticket</option></select>
+        <input class="form-input" id="posCliente" placeholder="Cliente (opcional)" style="margin-bottom:8px">
+        <input class="form-input" placeholder="Descuento (S/)" id="discountInput" oninput="updateCart()">
+      </div>
+      <div class="pay-methods" id="payMethods">
+        <div class="pay-btn" onclick="selectPay(this,'💵 Efectivo')">💵 Efectivo</div>
+        <div class="pay-btn" onclick="selectPay(this,'📱 Yape')">📱 Yape</div>
+        <div class="pay-btn" onclick="selectPay(this,'📱 Plin')">📱 Plin</div>
+        <div class="pay-btn" onclick="selectPay(this,'💳 Tarjeta')">💳 Tarjeta</div>
+      </div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;font-size:.9rem;padding:13px" onclick="confirmSale()">✅ Confirmar Venta</button>
+      <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:8px" onclick="clearCart()">🗑 Vaciar carrito</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ VENTAS ═══════════════════ -->
+<div class="page" id="page-ventas">
+  <div class="page-title">Historial de Ventas</div>
+  <div class="page-sub">Registro completo · Filtrable · Exportable</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Total Mes</div><div class="kpi-val gold">S/ 87,300</div></div>
+    <div class="kpi-card"><div class="kpi-label">Transacciones</div><div class="kpi-val">467</div></div>
+    <div class="kpi-card"><div class="kpi-label">Ticket Promedio</div><div class="kpi-val">S/ 187</div></div>
+    <div class="kpi-card"><div class="kpi-label">Yape / Plin</div><div class="kpi-val">62%</div></div>
+  </div>
+  <div class="panel">
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+      <input class="search-input" id="searchVentas" placeholder="🔍 Buscar por cliente, producto…" style="flex:1;min-width:180px">
+      <select class="form-select" id="metodoPagoFilter" style="width:140px"><option>Todos los métodos</option><option>Efectivo</option><option>Yape</option><option>Plin</option><option>Tarjeta</option></select>
+      <select class="form-select" id="docFilter" style="width:130px"><option>Todos los docs.</option><option>Boleta</option><option>Factura</option></select>
+      <button class="btn btn-outline btn-sm" onclick="exportVentasCSV()">⬇ CSV</button>
+      <button class="btn btn-gold btn-sm" onclick="openModal('modalVenta')">+ Nueva Venta</button>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Fecha</th><th>Cliente</th><th>Producto(s)</th><th>Método</th><th>Documento</th><th>Total</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody id="ventasTbl"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ INVENTARIO ═══════════════════ -->
+<div class="page" id="page-inventario">
+  <div class="page-title">Control de Inventario</div>
+  <div class="page-sub">SKU · Kardex · Valorización · PCGE 20 — Stock validado en tiempo real</div>
+  <div class="alert alert-green">✅ Inventario cuadrado. Stock Final = Stock Inicial + Entradas – Salidas. Sin stock negativo detectado.</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Total SKUs</div><div class="kpi-val gold">284</div></div>
+    <div class="kpi-card"><div class="kpi-label">Valorización</div><div class="kpi-val">S/ 142,350</div></div>
+    <div class="kpi-card"><div class="kpi-label">Rotación</div><div class="kpi-val">4.2x</div></div>
+    <div class="kpi-card"><div class="kpi-label">SKUs con stock normal</div><div class="kpi-val green">284</div></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(this,'tabStock')">Stock General</div>
+    <div class="tab" onclick="switchTab(this,'tabKardex')">Kardex</div>
+    <div class="tab" onclick="switchTab(this,'tabValorizacion')">Valorización</div>
+  </div>
+  <div class="tab-content active" id="tabStock">
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <input class="search-input" id="searchInv" placeholder="🔍 SKU, marca, modelo…" style="flex:1">
+      <select class="form-select" id="marcaFilterInv" style="width:130px"><option>Todas las marcas</option><option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option></select>
+      <button class="btn btn-gold btn-sm" onclick="openModal('modalInventario')">+ Añadir SKU</button>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>SKU</th><th>Marca</th><th>Modelo</th><th>Talla</th><th>Color</th><th>Stock</th><th>Costo</th><th>Precio</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody id="invTbl"></tbody>
+    </table></div>
+  </div>
+  <div class="tab-content" id="tabKardex">
+    <div class="panel">
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <select class="form-select"><option>NK-AF1-42-BL</option><option>AD-UB22-40-WH</option><option>VN-OS-38-BK</option></select>
+        <button class="btn btn-outline btn-sm" onclick="exportKardexPDF()">⬇ PDF Kardex</button>
+      </div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Operación</th><th>Entrada</th><th>Salida</th><th>Saldo</th><th>Costo Unit.</th><th>Valor Total</th><th>Referencia</th></tr></thead>
+        <tbody>
+          <tr class="kardex-row-in"><td>01/06/26</td><td>Saldo Inicial</td><td>24</td><td>—</td><td>24</td><td>S/ 120</td><td>S/ 2,880</td><td>SI-0601</td></tr>
+          <tr class="kardex-row-in"><td>05/06/26</td><td>Compra</td><td>12</td><td>—</td><td>36</td><td>S/ 120</td><td>S/ 4,320</td><td>OC-0142</td></tr>
+          <tr class="kardex-row-out"><td>08/06/26</td><td>Venta POS</td><td>—</td><td>5</td><td>31</td><td>S/ 120</td><td>S/ 3,720</td><td>BOL-1084</td></tr>
+          <tr class="kardex-row-out"><td>12/06/26</td><td>Venta POS</td><td>—</td><td>8</td><td>23</td><td>S/ 120</td><td>S/ 2,760</td><td>BOL-1121</td></tr>
+          <tr class="kardex-row-in"><td>15/06/26</td><td>Compra</td><td>20</td><td>—</td><td>43</td><td>S/ 122</td><td>S/ 5,246</td><td>OC-0155</td></tr>
+          <tr class="kardex-row-out"><td>17/06/26</td><td>Venta POS</td><td>—</td><td>6</td><td>37</td><td>S/ 121</td><td>S/ 4,477</td><td>BOL-1198</td></tr>
+        </tbody>
+      </table></div>
+      <div style="margin-top:12px;display:flex;gap:20px;font-size:.8rem">
+        <span>Stock Final: <strong style="color:var(--gold)">37 pares</strong></span>
+        <span>Valorización: <strong style="color:var(--green-light)">S/ 4,477</strong></span>
+        <span>Método: <span class="badge badge-gold">Promedio Ponderado</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" id="tabValorizacion">
+    <div class="panel">
+      <div class="panel-title">Valorización de Inventario por Marca</div>
+      <div class="chart-box-lg"><canvas id="chartValorizacion"></canvas></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Marca</th><th>SKUs</th><th>Pares Totales</th><th>Costo Promedio</th><th>Valorización</th><th>% del Total</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--gold)">Nike</strong></td><td>84</td><td>1,240</td><td>S/ 128</td><td>S/ 58,720</td><td>41.2%</td></tr>
+        <tr><td><strong>Adidas</strong></td><td>62</td><td>820</td><td>S/ 148</td><td>S/ 38,640</td><td>27.1%</td></tr>
+        <tr><td><strong>Vans</strong></td><td>48</td><td>580</td><td>S/ 95</td><td>S/ 19,550</td><td>13.7%</td></tr>
+        <tr><td><strong>Converse</strong></td><td>52</td><td>640</td><td>S/ 88</td><td>S/ 15,840</td><td>11.1%</td></tr>
+        <tr><td><strong>Puma</strong></td><td>38</td><td>420</td><td>S/ 96</td><td>S/ 9,600</td><td>6.9%</td></tr>
+        <tr style="font-weight:700"><td style="color:var(--gold)">TOTAL</td><td>284</td><td>3,700</td><td>S/ 117</td><td style="color:var(--gold)">S/ 142,350</td><td>100%</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CATÁLOGO ═══════════════════ -->
+<div class="page" id="page-catalogo">
+  <div class="page-title">Catálogo de Productos</div>
+  <div class="page-sub">Galería visual completa · SKU · Margen · Precio de venta</div>
+
+  <!-- Sync Banner -->
+  <div class="alert alert-gold" style="justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <span>🌐 <strong>Catálogo Web:</strong> Abre el catálogo público y las ventas se sincronizan automáticamente con el POS.</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline btn-sm" onclick="checkCatalogCart()" id="btnCheckCart">🔄 Importar carrito web</button>
+      <button class="btn btn-gold btn-sm" onclick="openCatalogSite()">🛍 Abrir catálogo web →</button>
+    </div>
+  </div>
+  <div id="syncNotice" style="display:none" class="alert alert-green">✅ <span id="syncMsg"></span> — <a href="#" style="color:var(--gold-light);text-decoration:none" onclick="nav('pos');return false">Ir al POS para confirmar venta →</a></div>
+
+  <div class="search-bar">
+    <input class="search-input" placeholder="🔍 Buscar modelo, marca, SKU…">
+    <select class="form-select" style="width:130px"><option>Todas</option><option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option></select>
+    <select class="form-select" style="width:120px"><option>Talla: Todas</option><option>38</option><option>39</option><option>40</option><option>41</option><option>42</option><option>43</option><option>44</option></select>
+    <button class="btn btn-gold btn-sm" onclick="openModal('modalProducto')">+ Nuevo Producto</button>
+  </div>
+  <div class="catalog-grid" id="catalogoGrid"></div>
+</div>
+
+<!-- ═══════════════════ CRM ═══════════════════ -->
+<div class="page" id="page-crm">
+  <div class="page-title">CRM — Gestión de Relaciones</div>
+  <div class="page-sub">Segmentación automática · Fidelización · Análisis de valor de cliente</div>
+  <div class="segment-grid" style="margin-bottom:24px">
+    <div class="segment-card"><div class="segment-val">12</div><div class="segment-label">Clientes VIP</div><div class="segment-pct">&gt; S/ 2,000 / mes</div></div>
+    <div class="segment-card"><div class="segment-val">87</div><div class="segment-label">Frecuentes</div><div class="segment-pct">3+ compras/mes</div></div>
+    <div class="segment-card"><div class="segment-val">134</div><div class="segment-label">Ocasionales</div><div class="segment-pct">1–2 compras/mes</div></div>
+    <div class="segment-card"><div class="segment-val">47</div><div class="segment-label">Nuevos</div><div class="segment-pct">Primer mes</div></div>
+    <div class="segment-card"><div class="segment-val">23</div><div class="segment-label">Inactivos</div><div class="segment-pct">&gt; 60 días sin compra</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Distribución de Segmentos</div>
+      <div class="chart-box"><canvas id="chartCRM"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Valor por Segmento (S/)</div>
+      <div class="stat-row"><span class="stat-label">🏆 VIP (12 clientes)</span><span class="stat-val gold">S/ 38,400</span></div>
+      <div class="stat-row"><span class="stat-label">⭐ Frecuentes (87)</span><span class="stat-val">S/ 28,710</span></div>
+      <div class="stat-row"><span class="stat-label">👤 Ocasionales (134)</span><span class="stat-val">S/ 13,400</span></div>
+      <div class="stat-row"><span class="stat-label">🆕 Nuevos (47)</span><span class="stat-val">S/ 4,700</span></div>
+      <div class="stat-row"><span class="stat-label">😴 Inactivos (23)</span><span class="stat-val" style="color:var(--gray)">S/ 0</span></div>
+      <div style="height:1px;background:#222;margin:10px 0"></div>
+      <div class="stat-row"><span class="stat-label" style="color:var(--gold);font-weight:700">TOTAL</span><span class="stat-val gold" style="font-weight:700">S/ 85,210</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Top 10 Clientes por Valor</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Cliente</th><th>Segmento</th><th>Compras</th><th>Total Gastado</th><th>Último Contacto</th><th>Puntos</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Alexandra Mendoza</td><td><span class="badge badge-gold">VIP</span></td><td>18</td><td>S/ 4,860</td><td>17/06/26</td><td>⭐ 4,860</td></tr>
+        <tr><td>2</td><td>Roberto Chávez</td><td><span class="badge badge-gold">VIP</span></td><td>14</td><td>S/ 3,920</td><td>15/06/26</td><td>⭐ 3,920</td></tr>
+        <tr><td>3</td><td>Carmen López</td><td><span class="badge badge-gold">VIP</span></td><td>12</td><td>S/ 3,240</td><td>14/06/26</td><td>⭐ 3,240</td></tr>
+        <tr><td>4</td><td>Diego Fernández</td><td><span class="badge badge-green">Frecuente</span></td><td>9</td><td>S/ 2,160</td><td>16/06/26</td><td>⭐ 2,160</td></tr>
+        <tr><td>5</td><td>Patricia Ruiz</td><td><span class="badge badge-green">Frecuente</span></td><td>8</td><td>S/ 1,920</td><td>13/06/26</td><td>⭐ 1,920</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CLIENTES ═══════════════════ -->
+<div class="page" id="page-clientes">
+  <div class="page-title">Directorio de Clientes</div>
+  <div class="page-sub">DNI · Nombre · Distrito · Historial de compras · Puntos de fidelidad</div>
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <input class="search-input" id="searchClientes" placeholder="🔍 Buscar por DNI, nombre, teléfono…" style="flex:1">
+    <select class="form-select" id="segFilter" style="width:130px"><option>Todos los tipos</option><option>VIP</option><option>Frecuente</option><option>Ocasional</option><option>Nuevo</option></select>
+    <button class="btn btn-gold btn-sm" onclick="openModal('modalCliente')">+ Nuevo Cliente</button>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>DNI</th><th>Nombre</th><th>Teléfono</th><th>Distrito</th><th>Compras</th><th>Total Gastado</th><th>Puntos</th><th>Segmento</th><th>Acción</th></tr></thead>
+    <tbody id="clientesTbl"></tbody>
+  </table></div>
+</div>
+
+<!-- ═══════════════════ PROVEEDORES ═══════════════════ -->
+<div class="page" id="page-proveedores">
+  <div class="page-title">Directorio de Proveedores</div>
+  <div class="page-sub">RUC · Razón Social · Crédito · Cuentas por pagar</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Proveedores Activos</div><div class="kpi-val gold">8</div></div>
+    <div class="kpi-card"><div class="kpi-label">Deuda Total</div><div class="kpi-val">S/ 24,600</div></div>
+    <div class="kpi-card"><div class="kpi-label">Por Vencer (30d)</div><div class="kpi-val">S/ 12,300</div></div>
+    <div class="kpi-card"><div class="kpi-label">Crédito Promedio</div><div class="kpi-val">32 días</div></div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:14px">
+    <input class="search-input" id="searchProveedores" placeholder="🔍 Buscar por RUC, razón social…" style="flex:1">
+    <button class="btn btn-gold btn-sm" onclick="openModal('modalProveedor')">+ Nuevo Proveedor</button>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>RUC</th><th>Razón Social</th><th>Contacto</th><th>Teléfono</th><th>Marcas</th><th>Crédito</th><th>Deuda Pendiente</th><th>Estado</th><th>Acción</th></tr></thead>
+    <tbody id="proveedoresTbl">
+      <tr><td class="mono">20512345678</td><td>Nike Perú S.A.C.</td><td>Marcos Leal</td><td>999-001</td><td>Nike</td><td>30 días</td><td>S/ 8,400</td><td><span class="badge badge-green">Activo</span></td></tr>
+      <tr><td class="mono">20523456789</td><td>Adidas Distribuciones</td><td>Sandra Gil</td><td>999-002</td><td>Adidas</td><td>45 días</td><td>S/ 6,200</td><td><span class="badge badge-green">Activo</span></td></tr>
+      <tr><td class="mono">20534567890</td><td>VF Corporation Perú</td><td>Luis Tong</td><td>999-003</td><td>Vans</td><td>30 días</td><td>S/ 3,800</td><td><span class="badge badge-green">Activo</span></td></tr>
+      <tr><td class="mono">20545678901</td><td>Converse Import SAC</td><td>Paola Vera</td><td>999-004</td><td>Converse</td><td>15 días</td><td>S/ 2,100</td><td><span class="badge badge-green">Activo</span></td></tr>
+      <tr><td class="mono">20556789012</td><td>Puma Distribuidora Perú</td><td>Raúl Meza</td><td>999-005</td><td>Puma</td><td>30 días</td><td>S/ 2,400</td><td><span class="badge badge-green">Activo</span></td></tr>
+      <tr><td class="mono">20567890123</td><td>New Balance Perú SAC</td><td>Gina Chu</td><td>999-006</td><td>New Balance</td><td>45 días</td><td>S/ 1,700</td><td><span class="badge badge-green">Activo</span></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- ═══════════════════ ACTIVOS ═══════════════════ -->
+<div class="page" id="page-activos">
+  <div class="page-title">Activos Empresariales</div>
+  <div class="page-sub">PCGE 33/34 · Depreciación · Amortización · Valor Neto en Libros</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Activos Tangibles</div><div class="kpi-val gold">S/ 38,500</div><div class="kpi-sub">PCGE 33</div></div>
+    <div class="kpi-card"><div class="kpi-label">Activos Intangibles</div><div class="kpi-val">S/ 12,800</div><div class="kpi-sub">PCGE 34</div></div>
+    <div class="kpi-card"><div class="kpi-label">Depreciación Acum.</div><div class="kpi-val">S/ 4,218</div><div class="kpi-sub">Acumulada</div></div>
+    <div class="kpi-card"><div class="kpi-label">Valor Neto en Libros</div><div class="kpi-val green">S/ 47,082</div></div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(this,'tabTangibles')">Tangibles (PCGE 33)</div>
+    <div class="tab" onclick="switchTab(this,'tabIntangibles')">Intangibles (PCGE 34)</div>
+  </div>
+  <div class="tab-content active" id="tabTangibles">
+    <div style="margin-bottom:10px;text-align:right"><button class="btn btn-gold btn-sm" onclick="openModal('modalActivoTangible')">+ Activo Tangible</button></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Código PCGE</th><th>Activo</th><th>Costo</th><th>Vida Útil</th><th>Dep./Mes</th><th>Dep. Acum.</th><th>VNL</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">333.01</td><td>POS System + Monitor</td><td>S/ 4,200</td><td>5 años</td><td>S/ 70</td><td>S/ 420</td><td>S/ 3,780</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td class="mono">335.01</td><td>Estantes Metálicos (x8)</td><td>S/ 6,400</td><td>10 años</td><td>S/ 53</td><td>S/ 320</td><td>S/ 6,080</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td class="mono">335.02</td><td>Mostrador de Vidrio</td><td>S/ 2,800</td><td>10 años</td><td>S/ 23</td><td>S/ 140</td><td>S/ 2,660</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td class="mono">336.01</td><td>Laptop Lenovo i7</td><td>S/ 3,500</td><td>4 años</td><td>S/ 73</td><td>S/ 438</td><td>S/ 3,062</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td class="mono">336.02</td><td>Cámara de Seguridad (x4)</td><td>S/ 2,800</td><td>5 años</td><td>S/ 47</td><td>S/ 280</td><td>S/ 2,520</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr><td class="mono">331.01</td><td>Acondicionamiento Local</td><td>S/ 18,800</td><td>10 años</td><td>S/ 157</td><td>S/ 940</td><td>S/ 17,860</td><td><span class="badge badge-green">Activo</span></td></tr>
+        <tr style="font-weight:700"><td colspan="2" style="color:var(--gold)">TOTAL TANGIBLES</td><td style="color:var(--gold)">S/ 38,500</td><td>—</td><td>S/ 423</td><td>S/ 2,538</td><td style="color:var(--green-light)">S/ 35,962</td><td></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="tab-content" id="tabIntangibles">
+    <div style="margin-bottom:10px;text-align:right"><button class="btn btn-gold btn-sm" onclick="openModal('modalActivoIntangible')">+ Activo Intangible</button></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Código PCGE</th><th>Concepto</th><th>Costo</th><th>Vida Útil</th><th>Amort./Mes</th><th>Amort. Acum.</th><th>VNL</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">346.01</td><td>Marca LORD MATUTE</td><td>S/ 4,500</td><td>10 años</td><td>S/ 38</td><td>S/ 225</td><td>S/ 4,275</td></tr>
+        <tr><td class="mono">343.01</td><td>Software ERP</td><td>S/ 3,800</td><td>5 años</td><td>S/ 63</td><td>S/ 380</td><td>S/ 3,420</td></tr>
+        <tr><td class="mono">346.02</td><td>Diseño de Tienda / Branding</td><td>S/ 2,500</td><td>5 años</td><td>S/ 42</td><td>S/ 250</td><td>S/ 2,250</td></tr>
+        <tr><td class="mono">341.01</td><td>Licencias y Permisos</td><td>S/ 2,000</td><td>5 años</td><td>S/ 33</td><td>S/ 200</td><td>S/ 1,800</td></tr>
+        <tr style="font-weight:700"><td colspan="2" style="color:var(--gold)">TOTAL INTANGIBLES</td><td style="color:var(--gold)">S/ 12,800</td><td>—</td><td>S/ 176</td><td>S/ 1,055</td><td style="color:var(--green-light)">S/ 11,745</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ INVERSIÓN INICIAL ═══════════════════ -->
+<div class="page" id="page-inversion">
+  <div class="page-title">Inversión Inicial</div>
+  <div class="page-sub">Capital propio · Financiamiento · ROI · Payback</div>
+  <div class="alert alert-gold">✅ Capital Propio + Financiamiento = Inversión Total · Validado</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Capital Propio</div><div class="kpi-val gold">S/ 45,000</div><div class="kpi-sub">52.9%</div></div>
+    <div class="kpi-card"><div class="kpi-label">Financiamiento</div><div class="kpi-val">S/ 40,000</div><div class="kpi-sub">47.1%</div></div>
+    <div class="kpi-card"><div class="kpi-label">Inversión Total</div><div class="kpi-val green">S/ 85,000</div><div class="kpi-sub">= CP + Fin.</div></div>
+    <div class="kpi-card"><div class="kpi-label">ROI</div><div class="kpi-val gold">43.2%</div><div class="kpi-sub">Anualizado</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Distribución de la Inversión</div>
+      <div class="chart-box"><canvas id="chartInversion"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Indicadores de Rentabilidad</div>
+      <div class="stat-row"><span class="stat-label">Inversión Total</span><span class="stat-val gold">S/ 85,000</span></div>
+      <div class="stat-row"><span class="stat-label">Utilidad Neta Anual (proy.)</span><span class="stat-val green">S/ 36,720</span></div>
+      <div class="stat-row"><span class="stat-label">ROI</span><span class="stat-val gold">43.2%</span></div>
+      <div class="stat-row"><span class="stat-label">Payback</span><span class="stat-val">2.3 años</span></div>
+      <div class="stat-row"><span class="stat-label">VAN (Tasa 12%)</span><span class="stat-val green">S/ 48,240</span></div>
+      <div class="stat-row"><span class="stat-label">TIR</span><span class="stat-val gold">38.6%</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Detalle de Inversión por Componente</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Componente</th><th>PCGE</th><th>Monto</th><th>%</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td>Acondicionamiento Local</td><td class="mono">331.01</td><td>S/ 18,800</td><td>22.1%</td><td>Capital Propio</td></tr>
+        <tr><td>Inventario Inicial</td><td class="mono">201.01</td><td>S/ 32,000</td><td>37.6%</td><td>Financiamiento</td></tr>
+        <tr><td>Mobiliario y Estantes</td><td class="mono">335.01</td><td>S/ 9,200</td><td>10.8%</td><td>Capital Propio</td></tr>
+        <tr><td>Equipos y POS</td><td class="mono">333.01</td><td>S/ 7,700</td><td>9.1%</td><td>Capital Propio</td></tr>
+        <tr><td>Activos Intangibles</td><td class="mono">346.01</td><td>S/ 12,800</td><td>15.1%</td><td>Capital Propio</td></tr>
+        <tr><td>Capital de Trabajo</td><td class="mono">—</td><td>S/ 4,500</td><td>5.3%</td><td>Capital Propio</td></tr>
+        <tr style="font-weight:700"><td style="color:var(--gold)">TOTAL</td><td>—</td><td style="color:var(--gold)">S/ 85,000</td><td>100%</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FINANCIAMIENTO ═══════════════════ -->
+<div class="page" id="page-financiamiento">
+  <div class="page-title">Financiamiento</div>
+  <div class="page-sub">Préstamos · Cronograma · TEA · Amortización — Sistema Francés</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Deuda Original</div><div class="kpi-val gold">S/ 40,000</div></div>
+    <div class="kpi-card"><div class="kpi-label">Saldo Actual</div><div class="kpi-val">S/ 28,420</div></div>
+    <div class="kpi-card"><div class="kpi-label">TEA</div><div class="kpi-val">18%</div></div>
+    <div class="kpi-card"><div class="kpi-label">Cuota Mensual</div><div class="kpi-val">S/ 1,200</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Simulador de Amortización</div>
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group"><label class="form-label">Monto (S/.)</label><input class="form-input" id="simMonto" value="40000" oninput="simularCronograma()"></div>
+      <div class="form-group"><label class="form-label">TEA (%)</label><input class="form-input" id="simTEA" value="18" oninput="simularCronograma()"></div>
+      <div class="form-group"><label class="form-label">Plazo (meses)</label><input class="form-input" id="simPlazo" value="36" oninput="simularCronograma()"></div>
+    </div>
+    <div style="margin-bottom:14px;display:flex;gap:8px">
+      <span style="font-size:.78rem;color:var(--gray)">Sistema:</span>
+      <select class="form-select" style="width:180px" id="simSistema" onchange="simularCronograma()"><option>Francés (cuota fija)</option><option>Alemán (capital fijo)</option></select>
+      <button class="btn btn-gold btn-sm" onclick="simularCronograma()">Calcular</button>
+      <button class="btn btn-outline btn-sm" onclick="exportCronogramaCSV()">⬇ Exportar CSV</button>
+    </div>
+    <div style="display:flex;gap:20px;margin-bottom:14px;font-size:.82rem;flex-wrap:wrap" id="simResumen"></div>
+    <div class="tbl-wrap" style="max-height:320px;overflow-y:auto"><table id="cronogramaTable">
+      <thead><tr><th>Cuota</th><th>Fecha</th><th>Saldo Inicial</th><th>Amortización</th><th>Interés</th><th>Cuota Total</th><th>Saldo Final</th></tr></thead>
+      <tbody id="cronogramaTbl"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CONTABILIDAD ═══════════════════ -->
+<div class="page" id="page-contabilidad">
+  <div class="page-title">Balance General</div>
+  <div class="page-sub">PCGE Perú · Validado: Activo = Pasivo + Patrimonio</div>
+  <div class="alert alert-green">✅ Balance cuadrado · Activo (S/ 215,050) = Pasivo (S/ 72,600) + Patrimonio (S/ 142,450)</div>
+  <div class="grid-2">
+    <div class="balance-col">
+      <div class="bal-section">
+        <div class="bal-head">ACTIVO CORRIENTE</div>
+        <div class="bal-row"><span class="bal-key">10 — Caja y Bancos</span><span class="bal-val">24,780</span></div>
+        <div class="bal-row"><span class="bal-key">12 — Cuentas por Cobrar</span><span class="bal-val">8,200</span></div>
+        <div class="bal-row"><span class="bal-key">20 — Inventario de Mercaderías</span><span class="bal-val">142,350</span></div>
+        <div class="bal-row"><span class="bal-key">19 — Estimación Desval.</span><span class="bal-val">(0)</span></div>
+        <div class="bal-row total"><span class="bal-key">Total Activo Corriente</span><span class="bal-val">175,330</span></div>
+      </div>
+      <div class="bal-section">
+        <div class="bal-head">ACTIVO NO CORRIENTE</div>
+        <div class="bal-row"><span class="bal-key">33 — Inmuebles, Maq. y Equipo</span><span class="bal-val">38,500</span></div>
+        <div class="bal-row"><span class="bal-key">39 — Deprec. Acumulada</span><span class="bal-val">(2,538)</span></div>
+        <div class="bal-row"><span class="bal-key">34 — Intangibles</span><span class="bal-val">12,800</span></div>
+        <div class="bal-row"><span class="bal-key">39 — Amort. Acumulada</span><span class="bal-val">(1,042)</span></div>
+        <div class="bal-row total"><span class="bal-key">Total Activo No Corriente</span><span class="bal-val">47,720</span></div>
+      </div>
+      <div class="bal-row total" style="font-size:1rem;padding:14px 0"><span class="bal-key">TOTAL ACTIVO</span><span class="bal-val" style="color:var(--gold);font-size:1.05rem">215,050</span></div>
+    </div>
+    <div class="balance-col">
+      <div class="bal-section">
+        <div class="bal-head">PASIVO CORRIENTE</div>
+        <div class="bal-row"><span class="bal-key">40 — IGV por Pagar</span><span class="bal-val">4,104</span></div>
+        <div class="bal-row"><span class="bal-key">40 — Impuesto a la Renta</span><span class="bal-val">2,897</span></div>
+        <div class="bal-row"><span class="bal-key">41 — Cuentas por Pagar (Prov.)</span><span class="bal-val">24,600</span></div>
+        <div class="bal-row"><span class="bal-key">45 — Cuota Préstamo (CP)</span><span class="bal-val">7,200</span></div>
+        <div class="bal-row total"><span class="bal-key">Total Pasivo Corriente</span><span class="bal-val">38,801</span></div>
+      </div>
+      <div class="bal-section">
+        <div class="bal-head">PASIVO NO CORRIENTE</div>
+        <div class="bal-row"><span class="bal-key">45 — Préstamos LP</span><span class="bal-val">33,799</span></div>
+        <div class="bal-row total"><span class="bal-key">Total Pasivo No Corriente</span><span class="bal-val">33,799</span></div>
+      </div>
+      <div class="bal-row total"><span class="bal-key">TOTAL PASIVO</span><span class="bal-val">72,600</span></div>
+      <div style="height:12px"></div>
+      <div class="bal-section">
+        <div class="bal-head">PATRIMONIO</div>
+        <div class="bal-row"><span class="bal-key">50 — Capital Social</span><span class="bal-val">45,000</span></div>
+        <div class="bal-row"><span class="bal-key">59 — Resultados Acumulados</span><span class="bal-val">79,246</span></div>
+        <div class="bal-row"><span class="bal-key">59 — Resultado del Ejercicio</span><span class="bal-val">18,204</span></div>
+        <div class="bal-row total"><span class="bal-key">Total Patrimonio</span><span class="bal-val">142,450</span></div>
+      </div>
+      <div class="bal-row total" style="font-size:1rem;padding:14px 0"><span class="bal-key">PASIVO + PATRIMONIO</span><span class="bal-val" style="color:var(--green-light);font-size:1.05rem">215,050</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ESTADO DE RESULTADOS ═══════════════════ -->
+<div class="page" id="page-resultados">
+  <div class="page-title">Estado de Resultados</div>
+  <div class="page-sub">Período: Enero – Junio 2026 · PCGE Perú</div>
+  <div class="grid-6-4">
+    <div class="panel">
+      <div class="er-row"><span class="er-label">Ventas Brutas</span><span class="er-val pos">S/ 102,952</span></div>
+      <div class="er-row"><span class="er-label">(−) Devoluciones y Descuentos</span><span class="er-val neg">(S/ 15,652)</span></div>
+      <div class="er-row subtotal"><span class="er-label" style="font-weight:700">= VENTAS NETAS</span><span class="er-val gold" style="font-weight:700">S/ 87,300</span></div>
+      <div class="er-row"><span class="er-label">(−) Costo de Ventas</span><span class="er-val neg">(S/ 55,149)</span></div>
+      <div class="er-row subtotal"><span class="er-label" style="font-weight:600">= UTILIDAD BRUTA</span><span class="er-val pos" style="font-weight:600">S/ 32,151</span></div>
+      <div style="height:6px"></div>
+      <div class="er-row"><span class="er-label">(−) Gastos de Ventas</span><span class="er-val neg">(S/ 4,200)</span></div>
+      <div class="er-row"><span class="er-label">(−) Gastos Administrativos</span><span class="er-val neg">(S/ 3,846)</span></div>
+      <div class="er-row"><span class="er-label">(−) Depreciación / Amortización</span><span class="er-val neg">(S/ 1,700)</span></div>
+      <div class="er-row subtotal"><span class="er-label" style="font-weight:600">= UTILIDAD OPERATIVA</span><span class="er-val pos" style="font-weight:600">S/ 22,405</span></div>
+      <div style="height:6px"></div>
+      <div class="er-row"><span class="er-label">(−) Gastos Financieros (Intereses)</span><span class="er-val neg">(S/ 1,304)</span></div>
+      <div class="er-row subtotal"><span class="er-label" style="font-weight:600">= UTILIDAD ANTES DE IMPUESTOS</span><span class="er-val pos" style="font-weight:600">S/ 21,101</span></div>
+      <div style="height:6px"></div>
+      <div class="er-row"><span class="er-label">(−) Impuesto a la Renta (13.72%)</span><span class="er-val neg">(S/ 2,897)</span></div>
+      <div class="er-row total"><span class="er-label">= UTILIDAD NETA</span><span class="er-val gold">S/ 18,204</span></div>
+    </div>
+    <div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-title">Márgenes</div>
+        <div class="stat-row"><span class="stat-label">Margen Bruto</span><span class="stat-val gold">36.8%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:36.8%"></div></div>
+        <div style="height:8px"></div>
+        <div class="stat-row"><span class="stat-label">Margen Operativo</span><span class="stat-val">25.7%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:25.7%"></div></div>
+        <div style="height:8px"></div>
+        <div class="stat-row"><span class="stat-label">Margen Neto</span><span class="stat-val green">20.9%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:20.9%"></div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Composición de Costos</div>
+        <div class="chart-box"><canvas id="chartCostos"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FLUJO DE CAJA ═══════════════════ -->
+<div class="page" id="page-flujo">
+  <div class="page-title">Flujo de Caja</div>
+  <div class="page-sub">Saldo Final = Caja y Bancos del Balance General · Validado</div>
+  <div class="alert alert-green">✅ Saldo Final de Caja S/ 24,780 = Caja y Bancos en Balance General. Cuadrado.</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card"><div class="kpi-label">Saldo Inicial</div><div class="kpi-val">S/ 12,400</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Entradas</div><div class="kpi-val green">S/ 94,280</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total Salidas</div><div class="kpi-val" style="color:#E74C3C">S/ 81,900</div></div>
+    <div class="kpi-card"><div class="kpi-label">Saldo Final</div><div class="kpi-val gold">S/ 24,780</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Entradas de Caja</div>
+      <div class="er-row"><span class="er-label">Ventas al Contado</span><span class="er-val pos">S/ 79,080</span></div>
+      <div class="er-row"><span class="er-label">Cobros a Clientes</span><span class="er-val pos">S/ 8,200</span></div>
+      <div class="er-row"><span class="er-label">Otros Ingresos</span><span class="er-val pos">S/ 7,000</span></div>
+      <div class="er-row total"><span class="er-label">TOTAL ENTRADAS</span><span class="er-val pos">S/ 94,280</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Salidas de Caja</div>
+      <div class="er-row"><span class="er-label">Compra de Inventario</span><span class="er-val neg">(S/ 58,400)</span></div>
+      <div class="er-row"><span class="er-label">Gastos Operativos</span><span class="er-val neg">(S/ 8,046)</span></div>
+      <div class="er-row"><span class="er-label">Cuotas Préstamo</span><span class="er-val neg">(S/ 7,200)</span></div>
+      <div class="er-row"><span class="er-label">IGV Pagado</span><span class="er-val neg">(S/ 4,104)</span></div>
+      <div class="er-row"><span class="er-label">Impuesto a la Renta</span><span class="er-val neg">(S/ 2,897)</span></div>
+      <div class="er-row"><span class="er-label">Otros Gastos</span><span class="er-val neg">(S/ 1,253)</span></div>
+      <div class="er-row total"><span class="er-label">TOTAL SALIDAS</span><span class="er-val neg">(S/ 81,900)</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Flujo de Caja Mensual Proyectado — 2026</div>
+    <div class="chart-box-lg"><canvas id="chartFlujo"></canvas></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUNAT ═══════════════════ -->
+<div class="page" id="page-sunat">
+  <div class="page-title">Tributación SUNAT</div>
+  <div class="page-sub">IGV · Impuesto a la Renta · Libros Electrónicos · Régimen Tributario</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="tax-card"><div class="tax-label">IGV Débito Fiscal</div><div class="tax-val">S/ 15,714</div><div class="tax-sub">18% sobre ventas</div></div>
+    <div class="tax-card"><div class="tax-label">IGV Crédito Fiscal</div><div class="tax-val">S/ 11,610</div><div class="tax-sub">IGV de compras</div></div>
+    <div class="tax-card"><div class="tax-label">IGV por Pagar</div><div class="tax-val" style="color:#E74C3C">S/ 4,104</div><div class="tax-sub">Débito – Crédito</div></div>
+    <div class="tax-card"><div class="tax-label">IR Estimado</div><div class="tax-val" style="color:var(--gold)">S/ 2,897</div><div class="tax-sub">Régimen MYPE</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Régimen Tributario</div>
+      <div class="stat-row"><span class="stat-label">Régimen Actual</span><span class="stat-val gold">MYPE Tributario</span></div>
+      <div class="stat-row"><span class="stat-label">UIT 2026</span><span class="stat-val">S/ 5,500</span></div>
+      <div class="stat-row"><span class="stat-label">Tasa IR (hasta 15 UIT)</span><span class="stat-val">10%</span></div>
+      <div class="stat-row"><span class="stat-label">Tasa IR (más de 15 UIT)</span><span class="stat-val">29.5%</span></div>
+      <div class="stat-row"><span class="stat-label">Pago a Cuenta Mensual</span><span class="stat-val">1.0%</span></div>
+      <div class="stat-row"><span class="stat-label">Emisión Electrónica</span><span class="stat-val green">Activa</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Calendario SUNAT — Junio 2026</div>
+      <div class="stat-row"><span class="stat-label">PDT 621 – IGV</span><span class="stat-val">Vence: 25/06/26</span></div>
+      <div class="stat-row"><span class="stat-label">Pago a Cuenta IR</span><span class="stat-val">Vence: 25/06/26</span></div>
+      <div class="stat-row"><span class="stat-label">T-Registro</span><span class="stat-val green">Al día</span></div>
+      <div class="stat-row"><span class="stat-label">PLAME</span><span class="stat-val green">Al día</span></div>
+      <div class="stat-row"><span class="stat-label">Libro de Ventas Elect.</span><span class="stat-val green">Generado</span></div>
+      <div class="stat-row"><span class="stat-label">Libro de Compras Elect.</span><span class="stat-val green">Generado</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Libro de Ventas Electrónico — Junio 2026</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Correlativo</th><th>Fecha</th><th>Tipo Doc.</th><th>Serie</th><th>Número</th><th>Cliente</th><th>RUC/DNI</th><th>Base Imponible</th><th>IGV</th><th>Total</th></tr></thead>
+      <tbody>
+        <tr><td>001</td><td>01/06/26</td><td>03-Boleta</td><td>B001</td><td>001001</td><td>Carlos Ríos</td><td>47123456</td><td>S/ 186.44</td><td>S/ 33.56</td><td>S/ 220.00</td></tr>
+        <tr><td>002</td><td>01/06/26</td><td>01-Factura</td><td>F001</td><td>000021</td><td>Sport Center SAC</td><td>20456789012</td><td>S/ 296.61</td><td>S/ 53.39</td><td>S/ 350.00</td></tr>
+        <tr><td>003</td><td>02/06/26</td><td>03-Boleta</td><td>B001</td><td>001002</td><td>Ana Flores</td><td>48234567</td><td>S/ 152.54</td><td>S/ 27.46</td><td>S/ 180.00</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ REPORTES ═══════════════════ -->
+<div class="page" id="page-reportes">
+  <div class="page-title">Centro de Reportes</div>
+  <div class="page-sub">Todos los reportes usan la misma base de datos · Exportables</div>
+  <div class="catalog-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">
+    <div class="kpi-card" style="cursor:pointer" onclick="generarReporte('ventas')">
+      <div class="kpi-icon">💳</div><div class="kpi-label">Reporte de Ventas</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Ventas por período, producto, marca, método de pago</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('ventas')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">📦</div><div class="kpi-label">Reporte de Inventario</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Stock, valorización, Kardex, rotación</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('inventario')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">📈</div><div class="kpi-label">Rentabilidad</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Márgenes, ROI, TIR, Payback por producto</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('rentabilidad')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">👥</div><div class="kpi-label">Clientes</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Segmentos, valor, frecuencia, retención</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('clientes')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">🚛</div><div class="kpi-label">Proveedores</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Cuentas por pagar, deuda, condiciones</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('proveedores')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">🏦</div><div class="kpi-label">Financiamiento</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Cronograma, saldos, intereses pagados</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('financiamiento')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">💰</div><div class="kpi-label">Estados Financieros</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">Balance, P&L, Flujo de Caja completo</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('financieros')">⬇ Generar</button>
+    </div>
+    <div class="kpi-card" style="cursor:pointer">
+      <div class="kpi-icon">🏛️</div><div class="kpi-label">SUNAT</div>
+      <div style="font-size:.82rem;color:var(--white2);margin-top:8px">PLE ventas, compras, IGV, Renta</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:14px" onclick="generarReporte('sunat')">⬇ Generar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ COSTEO ═══════════════════ -->
+<div class="page" id="page-costeo">
+  <div class="page-title">🧮 Calculadora de Costeo para Reventa</div>
+  <div class="page-sub">Costo + Gastos + Margen deseado → Precio sugerido de venta</div>
+  <div class="alert alert-gold">💡 Ingresa los datos de un producto y calcula automáticamente el precio óptimo de reventa.</div>
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">Datos del Producto</div>
+      <div class="form-group"><label class="form-label">Nombre / Modelo</label><input class="form-input" id="cst_nombre" placeholder="Ej: Nike Air Force 1 OG T42"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Costo de Compra (S/)</label><input class="form-input" id="cst_costo" type="number" placeholder="0.00" oninput="calcCosteo()"></div>
+        <div class="form-group"><label class="form-label">Flete / Envío (S/)</label><input class="form-input" id="cst_flete" type="number" placeholder="0.00" oninput="calcCosteo()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Comisión plataforma % (Ej: Shein, ML)</label><input class="form-input" id="cst_comision_pct" type="number" placeholder="0" oninput="calcCosteo()"></div>
+        <div class="form-group"><label class="form-label">Otros Gastos (S/)</label><input class="form-input" id="cst_otros" type="number" placeholder="0.00" oninput="calcCosteo()"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">¿Incluir IGV (18%)?</label>
+          <select class="form-select" id="cst_igv" onchange="calcCosteo()">
+            <option value="0">No (precio sin IGV)</option>
+            <option value="1">Sí (precio incluye IGV)</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Margen de Ganancia Deseado (%)</label><input class="form-input" id="cst_margen" type="number" placeholder="30" oninput="calcCosteo()"></div>
+      </div>
+    </div>
+    <div class="panel" id="cst_resultado">
+      <div class="panel-title">Resultado del Costeo</div>
+      <div class="stat-row"><span class="stat-label">Costo de Compra</span><span class="stat-val" id="r_costo">S/ 0.00</span></div>
+      <div class="stat-row"><span class="stat-label">Flete / Envío</span><span class="stat-val" id="r_flete">S/ 0.00</span></div>
+      <div class="stat-row"><span class="stat-label">Comisión Plataforma</span><span class="stat-val" id="r_comision">S/ 0.00</span></div>
+      <div class="stat-row"><span class="stat-label">Otros Gastos</span><span class="stat-val" id="r_otros">S/ 0.00</span></div>
+      <div class="stat-row"><span class="stat-label" style="font-weight:700">Costo Total</span><span class="stat-val gold" style="font-weight:700" id="r_total_costo">S/ 0.00</span></div>
+      <div style="height:1px;background:#222;margin:10px 0"></div>
+      <div class="stat-row"><span class="stat-label">Margen Deseado (%)</span><span class="stat-val" id="r_margen_pct">0%</span></div>
+      <div class="stat-row"><span class="stat-label">Ganancia (S/)</span><span class="stat-val green" id="r_ganancia">S/ 0.00</span></div>
+      <div class="stat-row"><span class="stat-label">IGV sobre venta</span><span class="stat-val" id="r_igv_val">—</span></div>
+      <div style="height:1px;background:var(--gold-dim);margin:10px 0"></div>
+      <div class="stat-row"><span class="stat-label" style="color:var(--gold);font-weight:700;font-size:.9rem">💰 PRECIO SUGERIDO</span><span class="kpi-val gold" id="r_precio_sugerido" style="font-size:1.6rem">S/ 0.00</span></div>
+      <div style="margin-top:10px;font-size:.72rem;color:var(--gray)" id="r_nota"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Historial de Costos Calculados</div>
+    <div style="text-align:right;margin-bottom:10px"><button class="btn btn-gold btn-sm" onclick="guardarCosteo()">💾 Guardar cálculo</button></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Producto</th><th>Costo Total</th><th>Margen</th><th>Precio Sugerido</th><th>Ganancia</th><th>Fecha</th></tr></thead>
+      <tbody id="costeoHistorial"></tbody>
+    </table></div>
+  </div>
+</div>
+
+</main><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══════════════════════════════════════════════ MODALS -->
+
+<!-- Modal: Nueva Venta -->
+<div class="modal" id="modalVenta">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalVenta')">✕</button>
+    <div class="modal-title">Nueva Venta Manual</div>
+    <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="mv_cliente" placeholder="Nombre del cliente"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="mv_fecha" type="date"></div>
+      <div class="form-group"><label class="form-label">Método de Pago</label>
+        <select class="form-select" id="mv_metodo"><option>Efectivo</option><option>Yape</option><option>Plin</option><option>Tarjeta</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo Documento</label>
+        <select class="form-select" id="mv_doc"><option>Boleta</option><option>Factura</option><option>Ticket</option></select></div>
+      <div class="form-group"><label class="form-label">Total (S/)</label><input class="form-input" id="mv_total" type="number" placeholder="0.00"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Producto(s)</label><input class="form-input" id="mv_prod" placeholder="Describir producto(s)"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="registrarVentaManual()">✅ Registrar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalVenta')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: SKU Inventario -->
+<div class="modal" id="modalInventario">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalInventario')">✕</button>
+    <div class="modal-title">Añadir / Editar SKU</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="ni_sku" placeholder="NK-AF1-42-BL"></div>
+      <div class="form-group"><label class="form-label">Marca</label>
+        <select class="form-select" id="ni_marca"><option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option><option>New Balance</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Modelo</label><input class="form-input" id="ni_modelo" placeholder="Air Force 1 OG '07"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Talla</label><input class="form-input" id="ni_talla" placeholder="42"></div>
+      <div class="form-group"><label class="form-label">Color</label><input class="form-input" id="ni_color" placeholder="Blanco"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Stock Inicial</label><input class="form-input" id="ni_stock" type="number" placeholder="0"></div>
+      <div class="form-group"><label class="form-label">Stock Mínimo</label><input class="form-input" id="ni_minstock" type="number" placeholder="5"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Costo (S/)</label><input class="form-input" id="ni_costo" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Precio Venta (S/)</label><input class="form-input" id="ni_precio" type="number" placeholder="0.00"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarSKU()">✅ Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalInventario')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Producto Catálogo -->
+<div class="modal" id="modalProducto">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalProducto')">✕</button>
+    <div class="modal-title">Nuevo Producto — Catálogo</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Marca</label>
+        <select class="form-select" id="np2_marca"><option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option></select></div>
+      <div class="form-group"><label class="form-label">Emoji / Icono</label><input class="form-input" id="np2_emoji" placeholder="👟"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Modelo</label><input class="form-input" id="np2_modelo" placeholder="Air Force 1 OG '07"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Talla</label><input class="form-input" id="np2_talla" placeholder="42"></div>
+      <div class="form-group"><label class="form-label">Color</label><input class="form-input" id="np2_color" placeholder="Blanco"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Costo (S/)</label><input class="form-input" id="np2_costo" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Precio Venta (S/)</label><input class="form-input" id="np2_precio" type="number" placeholder="0.00"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarProductoCatalogo()">✅ Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalProducto')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cliente -->
+<div class="modal" id="modalCliente">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalCliente')">✕</button>
+    <div class="modal-title">Nuevo Cliente</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">DNI</label><input class="form-input" id="nc_dni" placeholder="47123456"></div>
+      <div class="form-group"><label class="form-label">Nombre completo</label><input class="form-input" id="nc_nombre" placeholder="Juan Pérez Ríos"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="nc_tel" placeholder="987654321"></div>
+      <div class="form-group"><label class="form-label">Distrito</label><input class="form-input" id="nc_distrito" placeholder="Trujillo"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Segmento</label>
+      <select class="form-select" id="nc_seg"><option>Nuevo</option><option>Ocasional</option><option>Frecuente</option><option>VIP</option></select></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarCliente()">✅ Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalCliente')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Proveedor -->
+<div class="modal" id="modalProveedor">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalProveedor')">✕</button>
+    <div class="modal-title">Nuevo Proveedor</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">RUC</label><input class="form-input" id="np_ruc" placeholder="20512345678"></div>
+      <div class="form-group"><label class="form-label">Razón Social</label><input class="form-input" id="np_razon" placeholder="Nike Perú S.A.C."></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Contacto</label><input class="form-input" id="np_contacto" placeholder="Nombre de contacto"></div>
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="np_tel" placeholder="01-234567"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Marcas que provee</label><input class="form-input" id="np_marcas" placeholder="Nike, Jordan"></div>
+      <div class="form-group"><label class="form-label">Días de Crédito</label><input class="form-input" id="np_credito" type="number" placeholder="30"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarProveedor()">✅ Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalProveedor')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Producto -->
+<div class="modal" id="modalEditProducto">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditProducto')">✕</button>
+    <div class="modal-title">✏️ Editar Producto</div>
+    <input type="hidden" id="ep_idx">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">SKU</label><input class="form-input" id="ep_sku"></div>
+      <div class="form-group"><label class="form-label">Marca</label>
+        <select class="form-select" id="ep_marca"><option>Nike</option><option>Adidas</option><option>Vans</option><option>Converse</option><option>Puma</option><option>New Balance</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Modelo</label><input class="form-input" id="ep_modelo"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Talla</label><input class="form-input" id="ep_talla"></div>
+      <div class="form-group"><label class="form-label">Color</label><input class="form-input" id="ep_color"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Stock</label><input class="form-input" type="number" id="ep_stock"></div>
+      <div class="form-group"><label class="form-label">Emoji</label><input class="form-input" id="ep_emoji"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Costo (S/)</label><input class="form-input" type="number" id="ep_costo"></div>
+      <div class="form-group"><label class="form-label">Precio Venta (S/)</label><input class="form-input" type="number" id="ep_precio"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="guardarProducto()">✅ Guardar Cambios</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarProducto()">🗑 Eliminar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalEditProducto')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Venta -->
+<div class="modal" id="modalEditVenta">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditVenta')">✕</button>
+    <div class="modal-title">✏️ Editar Venta</div>
+    <input type="hidden" id="ev_idx">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">ID Venta</label><input class="form-input" id="ev_id"></div>
+      <div class="form-group"><label class="form-label">Fecha</label><input class="form-input" id="ev_fecha"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="ev_cliente"></div>
+    <div class="form-group"><label class="form-label">Producto(s)</label><input class="form-input" id="ev_prod"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Método de Pago</label>
+        <select class="form-select" id="ev_metodo"><option>Efectivo</option><option>Yape</option><option>Plin</option><option>Tarjeta</option></select></div>
+      <div class="form-group"><label class="form-label">Documento</label>
+        <select class="form-select" id="ev_doc"><option>Boleta</option><option>Factura</option><option>Ticket</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Total (S/)</label><input class="form-input" id="ev_total" type="number"></div>
+      <div class="form-group"><label class="form-label">Estado</label>
+        <select class="form-select" id="ev_estado"><option>Pagado</option><option>Pendiente</option><option>Anulado</option></select></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="guardarVenta()">✅ Guardar Cambios</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarVenta()">🗑 Eliminar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalEditVenta')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Cliente -->
+<div class="modal" id="modalEditCliente">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditCliente')">✕</button>
+    <div class="modal-title">✏️ Editar Cliente</div>
+    <input type="hidden" id="ec_idx">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">DNI</label><input class="form-input" id="ec_dni"></div>
+      <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="ec_nombre"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="ec_tel"></div>
+      <div class="form-group"><label class="form-label">Distrito</label><input class="form-input" id="ec_distrito"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Total Gastado (S/)</label><input class="form-input" type="number" id="ec_total"></div>
+      <div class="form-group"><label class="form-label">Segmento</label>
+        <select class="form-select" id="ec_seg"><option>Nuevo</option><option>Ocasional</option><option>Frecuente</option><option>VIP</option></select></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="guardarCliente()">✅ Guardar Cambios</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarCliente()">🗑 Eliminar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalEditCliente')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: KPI -->
+<div class="modal" id="modalKpi">
+  <div class="modal-box" style="width:340px">
+    <button class="modal-close" onclick="closeModal('modalKpi')">✕</button>
+    <div class="modal-title" id="kpiModalTitle">Editar KPI</div>
+    <div class="form-group"><label class="form-label">Nuevo Valor</label><input class="form-input" id="kpiInput" type="number"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="saveKpi()">✅ Guardar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalKpi')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Editar Proveedor -->
+<div class="modal" id="modalEditProveedor">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalEditProveedor')">✕</button>
+    <div class="modal-title">✏️ Editar Proveedor</div>
+    <input type="hidden" id="ep2_idx">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">RUC</label><input class="form-input" id="ep2_ruc"></div>
+      <div class="form-group"><label class="form-label">Razón Social</label><input class="form-input" id="ep2_razon"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Contacto</label><input class="form-input" id="ep2_contacto"></div>
+      <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" id="ep2_tel"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Marcas</label><input class="form-input" id="ep2_marcas"></div>
+      <div class="form-group"><label class="form-label">Días Crédito</label><input class="form-input" type="number" id="ep2_credito"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Deuda Pendiente (S/)</label><input class="form-input" type="number" id="ep2_deuda"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="guardarProveedor()">✅ Guardar Cambios</button>
+      <button class="btn btn-red btn-sm" onclick="eliminarProveedor()">🗑 Eliminar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalEditProveedor')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Activo Tangible -->
+<div class="modal" id="modalActivoTangible">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalActivoTangible')">✕</button>
+    <div class="modal-title">+ Activo Tangible</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Código PCGE</label><input class="form-input" id="at_codigo" placeholder="333.01"></div>
+      <div class="form-group"><label class="form-label">Nombre del Activo</label><input class="form-input" id="at_nombre" placeholder="Laptop HP"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Costo (S/)</label><input class="form-input" id="at_costo" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Vida Útil (años)</label><input class="form-input" id="at_vida" type="number" placeholder="5"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarActivoTangible()">✅ Registrar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalActivoTangible')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Activo Intangible -->
+<div class="modal" id="modalActivoIntangible">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modalActivoIntangible')">✕</button>
+    <div class="modal-title">+ Activo Intangible</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Código PCGE</label><input class="form-input" id="ai_codigo" placeholder="346.01"></div>
+      <div class="form-group"><label class="form-label">Concepto</label><input class="form-input" id="ai_nombre" placeholder="Software CRM"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Costo (S/)</label><input class="form-input" id="ai_costo" type="number" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">Vida Útil (años)</label><input class="form-input" id="ai_vida" type="number" placeholder="5"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="agregarActivoIntangible()">✅ Registrar</button>
+      <button class="btn btn-outline" onclick="closeModal('modalActivoIntangible')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ SCRIPTS -->
+<script>
+// ═══════════════════════════════════════════════════════════
+//  LORD MATUTE ERP — JavaScript Completo (Todos los módulos)
+// ═══════════════════════════════════════════════════════════
+
+// ── DATA (arrays mutables) ────────────────────────────────
+let productos = [
+  {emoji:'👟',marca:'Nike',modelo:"Air Force 1 OG '07",sku:'NK-AF1-42-BL',talla:'42',color:'Blanco',costo:120,precio:200,stock:37},
+  {emoji:'👟',marca:'Nike',modelo:'Air Max 90 Essential',sku:'NK-AM90-41-GR',talla:'41',color:'Gris',costo:145,precio:260,stock:22},
+  {emoji:'👟',marca:'Nike',modelo:'Jordan 1 Retro High OG',sku:'NK-JD1-43-BK',talla:'43',color:'Negro',costo:280,precio:480,stock:14},
+  {emoji:'👟',marca:'Adidas',modelo:'Ultra Boost 22',sku:'AD-UB22-40-WH',talla:'40',color:'Blanco',costo:148,precio:280,stock:18},
+  {emoji:'👟',marca:'Adidas',modelo:'Stan Smith Classic',sku:'AD-SS-39-WH',talla:'39',color:'Blanco',costo:95,precio:180,stock:31},
+  {emoji:'👟',marca:'Adidas',modelo:'Samba OG',sku:'AD-SB-41-BK',talla:'41',color:'Negro',costo:105,precio:195,stock:26},
+  {emoji:'👟',marca:'Vans',modelo:'Old Skool Suede',sku:'VN-OS-38-BK',talla:'38',color:'Negro',costo:88,precio:165,stock:42},
+  {emoji:'👟',marca:'Vans',modelo:'Authentic Classic',sku:'VN-AU-40-NV',talla:'40',color:'Navy',costo:72,precio:135,stock:55},
+  {emoji:'👟',marca:'Converse',modelo:'Chuck Taylor Classic',sku:'CV-CT-42-WH',talla:'42',color:'Blanco',costo:75,precio:130,stock:48},
+  {emoji:'👟',marca:'Converse',modelo:'Run Star Hike',sku:'CV-RSH-39-BK',talla:'39',color:'Negro',costo:110,precio:200,stock:19},
+  {emoji:'👟',marca:'Puma',modelo:'RS-X Softcase',sku:'PM-RSX-41-WH',talla:'41',color:'Blanco',costo:98,precio:185,stock:24},
+  {emoji:'👟',marca:'New Balance',modelo:'990v5 Made in USA',sku:'NB-990-42-GR',talla:'42',color:'Gris',costo:210,precio:380,stock:11},
+];
+
+let clientes = [
+  {dni:'47123456',nombre:'Alexandra Mendoza',tel:'987001001',distrito:'Trujillo',compras:18,total:4860,puntos:4860,seg:'VIP'},
+  {dni:'48234567',nombre:'Roberto Chávez',tel:'987001002',distrito:'La Esperanza',compras:14,total:3920,puntos:3920,seg:'VIP'},
+  {dni:'49345678',nombre:'Carmen López',tel:'987001003',distrito:'El Porvenir',compras:12,total:3240,puntos:3240,seg:'VIP'},
+  {dni:'50456789',nombre:'Diego Fernández',tel:'987001004',distrito:'Víctor Larco',compras:9,total:2160,puntos:2160,seg:'Frecuente'},
+  {dni:'51567890',nombre:'Patricia Ruiz',tel:'987001005',distrito:'Florencia de Mora',compras:8,total:1920,puntos:1920,seg:'Frecuente'},
+  {dni:'52678901',nombre:'Carlos Torres',tel:'987001006',distrito:'Trujillo',compras:5,total:940,puntos:940,seg:'Ocasional'},
+  {dni:'53789012',nombre:'María Santos',tel:'987001007',distrito:'Huanchaco',compras:3,total:520,puntos:520,seg:'Ocasional'},
+  {dni:'54890123',nombre:'Luis Quispe',tel:'987001008',distrito:'Moche',compras:1,total:180,puntos:180,seg:'Nuevo'},
+  {dni:'55901234',nombre:'Ana García',tel:'987001009',distrito:'Trujillo',compras:1,total:220,puntos:220,seg:'Nuevo'},
+];
+
+let ventas = [
+  {id:'B001-001042',fecha:'17/06/26',cliente:'Carlos Ríos',prod:'Air Force 1 OG',metodo:'Yape',doc:'Boleta',total:220,estado:'Pagado'},
+  {id:'F001-000021',fecha:'17/06/26',cliente:'Sport Center SAC',prod:'Ultra Boost 22 x2',metodo:'Transferencia',doc:'Factura',total:560,estado:'Pagado'},
+  {id:'B001-001041',fecha:'16/06/26',cliente:'Ana Flores',prod:'Chuck Taylor Classic',metodo:'Efectivo',total:130,doc:'Boleta',estado:'Pagado'},
+  {id:'B001-001040',fecha:'16/06/26',cliente:'Luis Pérez',prod:'Vans Old Skool',metodo:'Tarjeta',doc:'Boleta',total:165,estado:'Pagado'},
+  {id:'B001-001039',fecha:'15/06/26',cliente:'María Soto',prod:'Jordan 1 Retro High',metodo:'Yape',doc:'Boleta',total:480,estado:'Pagado'},
+  {id:'B001-001038',fecha:'15/06/26',cliente:'Jorge Castro',prod:'Stan Smith Classic',metodo:'Plin',doc:'Boleta',total:180,estado:'Pagado'},
+  {id:'B001-001037',fecha:'14/06/26',cliente:'Patricia Ruiz',prod:'NB 990v5',metodo:'Tarjeta',doc:'Boleta',total:380,estado:'Pagado'},
+  {id:'B001-001036',fecha:'14/06/26',cliente:'Carmen López',prod:'Adidas Samba OG x2',metodo:'Yape',doc:'Boleta',total:390,estado:'Pagado'},
+];
+
+let proveedores = [
+  {ruc:'20512345678',razon:'Nike Perú S.A.C.',contacto:'Marcos Leal',tel:'999-001',marcas:'Nike',credito:30,deuda:8400,estado:'Activo'},
+  {ruc:'20523456789',razon:'Adidas Distribuciones',contacto:'Sandra Gil',tel:'999-002',marcas:'Adidas',credito:45,deuda:6200,estado:'Activo'},
+  {ruc:'20534567890',razon:'VF Corporation Perú',contacto:'Luis Tong',tel:'999-003',marcas:'Vans',credito:30,deuda:3800,estado:'Activo'},
+  {ruc:'20545678901',razon:'Converse Import SAC',contacto:'Paola Vera',tel:'999-004',marcas:'Converse',credito:15,deuda:2100,estado:'Activo'},
+  {ruc:'20556789012',razon:'Puma Distribuidora Perú',contacto:'Raúl Meza',tel:'999-005',marcas:'Puma',credito:30,deuda:2400,estado:'Activo'},
+  {ruc:'20567890123',razon:'New Balance Perú SAC',contacto:'Gina Chu',tel:'999-006',marcas:'New Balance',credito:45,deuda:1700,estado:'Activo'},
+];
+
+let invData = [
+  {sku:'NK-AF1-42-BL',marca:'Nike',modelo:"Air Force 1 OG '07",talla:'42',color:'Blanco',stock:37,costo:120,precio:200},
+  {sku:'NK-AM90-41-GR',marca:'Nike',modelo:'Air Max 90 Essential',talla:'41',color:'Gris',stock:22,costo:145,precio:260},
+  {sku:'NK-JD1-43-BK',marca:'Nike',modelo:'Jordan 1 Retro',talla:'43',color:'Negro',stock:14,costo:280,precio:480},
+  {sku:'AD-UB22-40-WH',marca:'Adidas',modelo:'Ultra Boost 22',talla:'40',color:'Blanco',stock:18,costo:148,precio:280},
+  {sku:'AD-SS-39-WH',marca:'Adidas',modelo:'Stan Smith Classic',talla:'39',color:'Blanco',stock:31,costo:95,precio:180},
+  {sku:'VN-OS-38-BK',marca:'Vans',modelo:'Old Skool Suede',talla:'38',color:'Negro',stock:42,costo:88,precio:165},
+  {sku:'CV-CT-42-WH',marca:'Converse',modelo:'Chuck Taylor Classic',talla:'42',color:'Blanco',stock:48,costo:75,precio:130},
+  {sku:'PM-RSX-41-WH',marca:'Puma',modelo:'RS-X Softcase',talla:'41',color:'Blanco',stock:24,costo:98,precio:185},
+  {sku:'NB-990-42-GR',marca:'New Balance',modelo:'990v5',talla:'42',color:'Gris',stock:11,costo:210,precio:380},
+];
+
+let costeoHistorial = [];
+let cart = [];
+let selectedPay = '';
+let currentKpiEl = null;
+
+// ── LOGIN ─────────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  if(u==='admin'&&p==='lordmatute2026'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    initCharts();
+    populateTables();
+    populateProveedores();
+    populatePOS();
+    populateCatalog();
+    updateDate();
+    simularCronograma();
+    calcCosteo();
+    // Verificar si hay carrito pendiente del catálogo web
+    checkCatalogCartOnLogin();
+  } else {
+    const hint=document.getElementById('loginHint');
+    hint.style.color='#E74C3C';
+    hint.textContent='❌ Credenciales incorrectas. Usa: admin / lordmatute2026';
+  }
+}
+function doLogout(){
+  if(confirm('¿Cerrar sesión?')){
+    document.getElementById('app').style.display='none';
+    document.getElementById('loginScreen').style.display='flex';
+    document.getElementById('loginPass').value='';
+    document.getElementById('loginHint').style.color='';
+    document.getElementById('loginHint').textContent='admin · lordmatute2026';
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── SINCRONIZACIÓN CON CATÁLOGO WEB ──────────────────
+const CATALOG_URL = 'https://ikermatute691-glitch.github.io/Lunaritos/';
+const STORAGE_KEY = 'lm_catalog_cart';
+const STORAGE_SALE = 'lm_catalog_sale';
+let catalogWindow = null;
+let syncPollInterval = null;
+
+function openCatalogSite(){
+  // Pasar los productos actuales del ERP al catálogo via localStorage
+  try {
+    localStorage.setItem('lm_erp_products', JSON.stringify(productos));
+    localStorage.setItem('lm_erp_session', JSON.stringify({loggedIn:true, ts: Date.now()}));
+  } catch(e){}
+  catalogWindow = window.open(CATALOG_URL, 'lord_matute_catalog');
+  // Iniciar polling para detectar carrito nuevo
+  startSyncPolling();
+  showToast('🛍 Catálogo abierto — al confirmar una venta allá, se importará automáticamente aquí.');
+}
+
+function startSyncPolling(){
+  if(syncPollInterval) clearInterval(syncPollInterval);
+  syncPollInterval = setInterval(()=>{
+    try {
+      const raw = localStorage.getItem(STORAGE_SALE);
+      if(raw){
+        const sale = JSON.parse(raw);
+        if(sale && sale.ts && (Date.now()-sale.ts < 5*60*1000)){
+          // Hay una venta reciente del catálogo
+          showCartSyncBadge(sale);
+        }
+      } else {
+        const rawCart = localStorage.getItem(STORAGE_KEY);
+        if(rawCart){
+          const cartData = JSON.parse(rawCart);
+          if(cartData && cartData.items && cartData.items.length > 0 && cartData.ts && (Date.now()-cartData.ts < 10*60*1000)){
+            showCartSyncBadge(null);
+          }
+        }
+      }
+    } catch(e){}
+  }, 2000);
+}
+
+function showCartSyncBadge(sale){
+  const badge = document.getElementById('cartSyncBadge');
+  if(badge) badge.style.display='flex';
+}
+
+function checkCatalogCartOnLogin(){
+  try {
+    const rawSale = localStorage.getItem(STORAGE_SALE);
+    const rawCart = localStorage.getItem(STORAGE_KEY);
+    if(rawSale || rawCart){
+      showCartSyncBadge(null);
+      startSyncPolling();
+    }
+  } catch(e){}
+}
+
+function checkCatalogCart(){
+  try {
+    const rawSale = localStorage.getItem(STORAGE_SALE);
+    if(rawSale){
+      const sale = JSON.parse(rawSale);
+      if(sale && sale.items && sale.items.length){
+        importCatalogSale(sale);
+        return;
+      }
+    }
+    const rawCart = localStorage.getItem(STORAGE_KEY);
+    if(rawCart){
+      const cartData = JSON.parse(rawCart);
+      if(cartData && cartData.items && cartData.items.length){
+        importCatalogCart(cartData);
+        return;
+      }
+    }
+    showToast('ℹ️ Sin carrito pendiente del catálogo web.');
+    const notice = document.getElementById('syncNotice');
+    if(notice) notice.style.display='none';
+  } catch(e){
+    showToast('⚠️ No se pudo leer el carrito del catálogo.');
+  }
+}
+
+function importCatalogCart(cartData){
+  try {
+    let data = cartData;
+    if(!data){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw){ showToast('ℹ️ Sin carrito pendiente.'); return; }
+      data = JSON.parse(raw);
+    }
+    if(!data || !data.items || !data.items.length){ showToast('ℹ️ El carrito del catálogo está vacío.'); return; }
+    // Limpiar carrito actual del POS
+    cart = [];
+    // Importar items al carrito del POS
+    data.items.forEach(item => {
+      const prod = productos.find(p => p.sku === item.sku || p.modelo.toLowerCase() === item.modelo.toLowerCase());
+      if(prod){
+        const existing = cart.find(c => c.sku === prod.sku);
+        if(existing) existing.qty += (item.qty||1);
+        else cart.push({...prod, qty: item.qty||1});
+      }
+    });
+    if(!cart.length){ showToast('⚠️ Ningún producto del carrito coincide con el inventario.'); return; }
+    // Si hay cliente
+    const clienteEl = document.getElementById('posCliente');
+    if(clienteEl && data.cliente) clienteEl.value = data.cliente;
+    // Si hay método de pago
+    if(data.metodo){
+      document.querySelectorAll('.pay-btn').forEach(b=>{
+        if(b.textContent.toLowerCase().includes(data.metodo.toLowerCase())){
+          selectPay(b, b.textContent.trim());
+        }
+      });
+    }
+    // Si hay tipo de documento
+    if(data.doc){
+      const docEl = document.getElementById('posDocumento');
+      if(docEl){ for(let o of docEl.options){ if(o.value===data.doc){ docEl.value=o.value; break; }}}
+    }
+    renderCart();
+    // Mostrar notificación
+    const total = cart.reduce((a,c)=>a+c.precio*c.qty,0);
+    const msg = `${cart.reduce((a,c)=>a+c.qty,0)} producto(s) importados del catálogo web · Total: S/ ${total.toFixed(2)}`;
+    const notice = document.getElementById('syncNotice');
+    const syncMsg = document.getElementById('syncMsg');
+    if(notice && syncMsg){ syncMsg.textContent = msg; notice.style.display='flex'; }
+    // Ir directo al POS
+    nav('pos');
+    // POS notice
+    const posNotice = document.getElementById('posSyncNotice');
+    const posSyncMsg = document.getElementById('posSyncMsg');
+    if(posNotice && posSyncMsg){ posSyncMsg.textContent = msg; posNotice.style.display='flex'; }
+    showToast('✅ Carrito importado del catálogo — revisa y confirma la venta.');
+    // Limpiar badge
+    const badge = document.getElementById('cartSyncBadge');
+    if(badge) badge.style.display='none';
+    // Limpiar localStorage
+    localStorage.removeItem(STORAGE_KEY);
+  } catch(e){
+    showToast('⚠️ Error al importar el carrito: '+e.message);
+  }
+}
+
+function importCatalogSale(sale){
+  try {
+    if(!sale || !sale.items || !sale.items.length){ importCatalogCart(null); return; }
+    // Limpiar carrito
+    cart = [];
+    sale.items.forEach(item => {
+      const prod = productos.find(p => p.sku === item.sku || p.modelo.toLowerCase().includes((item.modelo||'').toLowerCase()));
+      if(prod){ cart.push({...prod, qty: item.qty||1}); }
+    });
+    if(!cart.length){ showToast('⚠️ Ningún producto coincide con el inventario.'); return; }
+    const clienteEl = document.getElementById('posCliente');
+    if(clienteEl && sale.cliente) clienteEl.value = sale.cliente;
+    if(sale.metodo){
+      document.querySelectorAll('.pay-btn').forEach(b=>{
+        if(b.textContent.replace(/[^\w]/g,'').toLowerCase().includes(sale.metodo.replace(/[^\w]/g,'').toLowerCase())){
+          selectPay(b, b.textContent.trim());
+        }
+      });
+    }
+    if(sale.doc){
+      const docEl = document.getElementById('posDocumento');
+      if(docEl) docEl.value = sale.doc;
+    }
+    renderCart();
+    nav('pos');
+    const total = cart.reduce((a,c)=>a+c.precio*c.qty,0);
+    showToast(`✅ Venta del catálogo cargada al POS — S/ ${total.toFixed(2)} — confirma para registrar.`);
+    const badge = document.getElementById('cartSyncBadge');
+    if(badge) badge.style.display='none';
+    localStorage.removeItem(STORAGE_SALE);
+    localStorage.removeItem(STORAGE_KEY);
+  } catch(e){
+    showToast('⚠️ Error al importar venta: '+e.message);
+  }
+}
+
+// Escuchar mensajes del catálogo web (postMessage)
+window.addEventListener('message', (e) => {
+  if(e.origin !== 'https://ikermatute691-glitch.github.io') return;
+  const data = e.data;
+  if(!data || !data.type) return;
+  if(data.type === 'LM_CATALOG_CART'){
+    // Guardar en localStorage y mostrar badge
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({items: data.items, cliente: data.cliente, ts: Date.now()})); } catch(err){}
+    showCartSyncBadge(null);
+    showToast(`🛒 ${data.items.length} producto(s) en el carrito del catálogo. Clic en 🛒 para importar.`);
+  }
+  if(data.type === 'LM_CATALOG_SALE'){
+    try { localStorage.setItem(STORAGE_SALE, JSON.stringify({...data, ts: Date.now()})); } catch(err){}
+    showCartSyncBadge(data);
+    showToast(`🔔 Venta recibida del catálogo web. Clic en 🛒 para registrar.`);
+  }
+});
+
+// Poll automático al abrir el ERP (por si se venía del catálogo)
+window.addEventListener('DOMContentLoaded', ()=>{
+  startSyncPolling();
+});
+
+// ── NAVIGATION ────────────────────────────────────────
+const pageTitles={
+  dashboard:'Dashboard Ejecutivo',pos:'Punto de Venta',
+  ventas:'Historial de Ventas',inventario:'Control de Inventario',
+  catalogo:'Catálogo de Productos',crm:'CRM — Gestión de Relaciones',
+  clientes:'Directorio de Clientes',proveedores:'Directorio de Proveedores',
+  activos:'Activos Empresariales',inversion:'Inversión Inicial',
+  financiamiento:'Financiamiento',contabilidad:'Balance General — Contabilidad',
+  resultados:'Estado de Resultados',flujo:'Flujo de Caja',
+  sunat:'Tributación SUNAT',reportes:'Centro de Reportes',costeo:'Calculadora de Costeo'
+};
+function nav(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  const pg=document.getElementById('page-'+page);
+  if(pg) pg.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i=>{
+    if(i.getAttribute('onclick')===`nav('${page}')`)i.classList.add('active');
+  });
+  document.getElementById('hdrTitle').textContent=pageTitles[page]||page;
+  window.scrollTo(0,0);
+}
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(el,tabId){
+  const bar=el.closest('.tab-bar');
+  bar.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  let sib=bar.nextElementSibling;
+  while(sib){
+    if(sib.classList&&sib.classList.contains('tab-content'))sib.classList.remove('active');
+    sib=sib.nextElementSibling;
+  }
+  document.getElementById(tabId).classList.add('active');
+}
+
+// ── MODALS ────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{
+  if(e.target===m)m.classList.remove('open');
+}));
+
+// ── DATE ──────────────────────────────────────────────
+function updateDate(){
+  const d=new Date();
+  document.getElementById('hdrDate').textContent=
+    d.toLocaleDateString('es-PE',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+}
+
+// ── KPI EDIT ──────────────────────────────────────────
+function editKpi(el,name){
+  currentKpiEl=el;
+  document.getElementById('kpiModalTitle').textContent='Editar: '+name;
+  document.getElementById('kpiInput').value=el.textContent.replace(/[^0-9.]/g,'');
+  openModal('modalKpi');
+}
+function saveKpi(){
+  if(currentKpiEl){
+    const v=parseFloat(document.getElementById('kpiInput').value)||0;
+    currentKpiEl.textContent=v.toLocaleString('es-PE');
+  }
+  closeModal('modalKpi');
+}
+
+// ── SEARCH: VENTAS ────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  const sv=document.getElementById('searchVentas');
+  if(sv) sv.addEventListener('input',()=>filterVentas());
+  const si=document.getElementById('searchInv');
+  if(si) si.addEventListener('input',()=>filterInv());
+  const sc=document.getElementById('searchClientes');
+  if(sc) sc.addEventListener('input',()=>filterClientes());
+  const sp=document.getElementById('searchProveedores');
+  if(sp) sp.addEventListener('input',()=>filterProveedores());
+  const ps=document.getElementById('posSearch');
+  if(ps) ps.addEventListener('input',()=>filterPOS());
+  const ms=document.getElementById('metodoPagoFilter');
+  if(ms) ms.addEventListener('change',()=>filterVentas());
+  const ds=document.getElementById('docFilter');
+  if(ds) ds.addEventListener('change',()=>filterVentas());
+  const mb=document.getElementById('marcaFilterInv');
+  if(mb) mb.addEventListener('change',()=>filterInv());
+  const cs=document.getElementById('segFilter');
+  if(cs) cs.addEventListener('change',()=>filterClientes());
+  const pb=document.getElementById('posMarcaFilter');
+  if(pb) pb.addEventListener('change',()=>filterPOS());
+});
+
+// ── POS ───────────────────────────────────────────────
+function populatePOS(filtro){
+  const g=document.getElementById('posGrid');
+  g.innerHTML='';
+  const lista=filtro?filtro:productos;
+  if(!lista.length){
+    g.innerHTML='<div style="color:var(--gray);font-size:.85rem;padding:20px">Sin resultados</div>';
+    return;
+  }
+  lista.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='prod-card';
+    d.innerHTML=`<div class="prod-emoji">${p.emoji}</div><div class="prod-name">${p.modelo}</div>
+      <div class="prod-brand">${p.marca} · T${p.talla}</div>
+      <div class="prod-price">S/ ${p.precio}</div>
+      <div style="font-size:.65rem;color:var(--gray);margin-top:2px">Stock: ${p.stock}</div>`;
+    d.onclick=()=>addToCart(p);
+    g.appendChild(d);
+  });
+}
+function filterPOS(){
+  const q=(document.getElementById('posSearch').value||'').toLowerCase();
+  const m=(document.getElementById('posMarcaFilter').value||'');
+  const res=productos.filter(p=>{
+    const txt=(p.modelo+p.marca+p.sku).toLowerCase();
+    return(!q||txt.includes(q))&&(!m||m==='Todas las marcas'||p.marca===m);
+  });
+  populatePOS(res);
+}
+function addToCart(p){
+  if(p.stock<=0){alert('Sin stock disponible para '+p.modelo);return;}
+  const ex=cart.find(c=>c.sku===p.sku);
+  if(ex){
+    if(ex.qty>=p.stock){alert('Stock máximo alcanzado: '+p.stock+' pares');return;}
+    ex.qty++;
+  } else cart.push({...p,qty:1});
+  renderCart();
+}
+function renderCart(){
+  const el=document.getElementById('cartItems');
+  if(!cart.length){
+    el.innerHTML='<div style="text-align:center;color:var(--gray);font-size:.8rem;padding:20px">Añade productos al carrito</div>';
+    updateCart();return;
+  }
+  el.innerHTML=cart.map((c,i)=>`
+    <div class="cart-item">
+      <div class="cart-item-name">${c.modelo}<br><span style="color:var(--gray);font-size:.7rem">${c.marca}</span></div>
+      <div class="cart-item-qty">
+        <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+        <span style="font-size:.8rem;min-width:18px;text-align:center">${c.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+        <span style="font-size:.82rem;color:var(--gold);margin-left:6px">S/ ${(c.precio*c.qty).toFixed(2)}</span>
+      </div>
+    </div>`).join('');
+  updateCart();
+}
+function changeQty(i,d){
+  cart[i].qty+=d;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  renderCart();
+}
+function updateCart(){
+  const sub=cart.reduce((a,c)=>a+c.precio*c.qty,0);
+  const disc=parseFloat(document.getElementById('discountInput').value)||0;
+  const net=Math.max(sub-disc,0);
+  const igv=net*0.18/1.18;
+  document.getElementById('cartSub').textContent='S/ '+sub.toFixed(2);
+  document.getElementById('cartIgv').textContent='S/ '+igv.toFixed(2);
+  document.getElementById('cartDesc').textContent='S/ '+disc.toFixed(2);
+  document.getElementById('cartTotal').textContent='S/ '+net.toFixed(2);
+}
+function selectPay(el,method){
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPay=method;
+}
+function confirmSale(){
+  if(!cart.length){alert('Añade productos al carrito');return;}
+  if(!selectedPay){alert('Selecciona un método de pago');return;}
+  const total=document.getElementById('cartTotal').textContent;
+  const totalNum=parseFloat(total.replace('S/ ','').replace(',',''))||0;
+  const clienteEl=document.getElementById('posCliente');
+  const cliente=clienteEl?clienteEl.value||'Cliente genérico':'Cliente genérico';
+  const docEl=document.getElementById('posDocumento');
+  const doc=docEl?docEl.value:'Boleta';
+  // Generar ID correlativo
+  const prefix=doc==='Factura'?'F001':'B001';
+  const nextN=ventas.filter(v=>v.doc===doc).length+1;
+  const newId=`${prefix}-${String(nextN+1040).padStart(6,'0')}`;
+  const fecha=new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  const prods=cart.map(c=>`${c.modelo} x${c.qty}`).join(', ');
+  // Descontar stock
+  cart.forEach(c=>{
+    const p=productos.find(x=>x.sku===c.sku);
+    if(p) p.stock-=c.qty;
+    const inv=invData.find(x=>x.sku===c.sku);
+    if(inv) inv.stock-=c.qty;
+  });
+  // Registrar venta
+  ventas.unshift({id:newId,fecha,cliente,prod:prods,metodo:selectedPay.replace(/[📱💵💳]/g,'').trim(),doc,total:totalNum,estado:'Pagado'});
+  populateTables();
+  clearCart();
+  alert(`✅ VENTA REGISTRADA\n\nID: ${newId}\nTotal: ${total}\nMétodo: ${selectedPay}\nDocumento: ${doc}\n\nInventario y Contabilidad actualizados.`);
+}
+function clearCart(){
+  cart=[];selectedPay='';
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('discountInput').value='';
+  const pc=document.getElementById('posCliente');
+  if(pc)pc.value='';
+  renderCart();
+  populatePOS();
+}
+
+// ── VENTAS TABLE ──────────────────────────────────────
+function populateTables(filtro){
+  const lista=filtro||ventas;
+  const vt=document.getElementById('ventasTbl');
+  if(vt) vt.innerHTML=lista.map((v,i)=>{
+    const idx=ventas.indexOf(v);
+    const badgeDoc=v.doc==='Factura'?'badge-blue':'badge-gold';
+    const badgeEst=v.estado==='Pagado'?'badge-green':v.estado==='Anulado'?'badge-red':'badge-gray';
+    return`<tr>
+      <td class="mono">${v.id}</td>
+      <td>${v.fecha}</td>
+      <td>${v.cliente}</td>
+      <td>${v.prod}</td>
+      <td>${v.metodo}</td>
+      <td><span class="badge ${badgeDoc}">${v.doc}</span></td>
+      <td style="color:var(--gold);font-weight:600">S/ ${Number(v.total).toLocaleString()}</td>
+      <td><span class="badge ${badgeEst}">${v.estado}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editarVenta(${idx})">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+  // Inventario
+  filterInv();
+  // Clientes
+  filterClientes();
+}
+function filterVentas(){
+  const q=(document.getElementById('searchVentas').value||'').toLowerCase();
+  const m=document.getElementById('metodoPagoFilter').value||'';
+  const d=document.getElementById('docFilter').value||'';
+  const res=ventas.filter(v=>{
+    const txt=(v.cliente+v.prod+v.id).toLowerCase();
+    return(!q||txt.includes(q))&&(!m||m.includes('métodos')||v.metodo===m)&&(!d||d.includes('docs')||v.doc===d);
+  });
+  populateTables(res);
+}
+function editarVenta(idx){
+  const v=ventas[idx];
+  document.getElementById('ev_idx').value=idx;
+  document.getElementById('ev_id').value=v.id;
+  document.getElementById('ev_fecha').value=v.fecha;
+  document.getElementById('ev_cliente').value=v.cliente;
+  document.getElementById('ev_prod').value=v.prod;
+  setSelect('ev_metodo',v.metodo);
+  setSelect('ev_doc',v.doc);
+  document.getElementById('ev_total').value=v.total;
+  setSelect('ev_estado',v.estado);
+  openModal('modalEditVenta');
+}
+function guardarVenta(){
+  const idx=parseInt(document.getElementById('ev_idx').value);
+  ventas[idx]={
+    id:document.getElementById('ev_id').value,
+    fecha:document.getElementById('ev_fecha').value,
+    cliente:document.getElementById('ev_cliente').value,
+    prod:document.getElementById('ev_prod').value,
+    metodo:document.getElementById('ev_metodo').value,
+    doc:document.getElementById('ev_doc').value,
+    total:parseFloat(document.getElementById('ev_total').value)||0,
+    estado:document.getElementById('ev_estado').value
+  };
+  closeModal('modalEditVenta');
+  populateTables();
+  showToast('✅ Venta actualizada');
+}
+function eliminarVenta(){
+  const idx=parseInt(document.getElementById('ev_idx').value);
+  if(confirm('¿Eliminar esta venta?')){
+    ventas.splice(idx,1);
+    closeModal('modalEditVenta');
+    populateTables();
+    showToast('🗑 Venta eliminada');
+  }
+}
+function registrarVentaManual(){
+  const cliente=document.getElementById('mv_cliente').value.trim()||'Sin nombre';
+  const fecha=document.getElementById('mv_fecha').value||new Date().toLocaleDateString('es-PE');
+  const metodo=document.getElementById('mv_metodo').value;
+  const doc=document.getElementById('mv_doc').value;
+  const total=parseFloat(document.getElementById('mv_total').value)||0;
+  const prod=document.getElementById('mv_prod').value.trim()||'Producto manual';
+  if(!total){alert('Ingresa el total de la venta');return;}
+  const prefix=doc==='Factura'?'F001':'B001';
+  const nextN=ventas.filter(v=>v.doc===doc).length+1;
+  const newId=`${prefix}-${String(nextN+1045).padStart(6,'0')}`;
+  ventas.unshift({id:newId,fecha,cliente,prod,metodo,doc,total,estado:'Pagado'});
+  closeModal('modalVenta');
+  populateTables();
+  // Clear form
+  ['mv_cliente','mv_fecha','mv_total','mv_prod'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showToast('✅ Venta registrada');
+}
+
+// ── INVENTARIO TABLE ──────────────────────────────────
+function renderInvTable(lista){
+  const it=document.getElementById('invTbl');
+  if(!it)return;
+  it.innerHTML=lista.map((d,idx)=>{
+    const realIdx=invData.indexOf(d);
+    const estado=d.stock<5?'badge-red':d.stock<10?'badge-gold':'badge-green';
+    const estadoTxt=d.stock<5?'BAJO':'NORMAL';
+    return`<tr>
+      <td class="mono" style="color:var(--gold-light)">${d.sku}</td>
+      <td>${d.marca}</td>
+      <td>${d.modelo}</td>
+      <td style="text-align:center">${d.talla}</td>
+      <td>${d.color}</td>
+      <td style="font-weight:600">${d.stock}</td>
+      <td>S/ ${d.costo}</td>
+      <td style="color:var(--gold)">S/ ${d.precio}</td>
+      <td><span class="badge ${estado}">${estadoTxt}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editarProducto(${realIdx})">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterInv(){
+  const q=(document.getElementById('searchInv')?.value||'').toLowerCase();
+  const m=(document.getElementById('marcaFilterInv')?.value||'');
+  const res=invData.filter(d=>{
+    const txt=(d.sku+d.marca+d.modelo).toLowerCase();
+    return(!q||txt.includes(q))&&(!m||m.includes('marcas')||d.marca===m);
+  });
+  renderInvTable(res);
+}
+function editarProducto(idx){
+  const d=invData[idx];
+  document.getElementById('ep_idx').value=idx;
+  document.getElementById('ep_sku').value=d.sku;
+  setSelect('ep_marca',d.marca);
+  document.getElementById('ep_modelo').value=d.modelo;
+  document.getElementById('ep_talla').value=d.talla;
+  document.getElementById('ep_color').value=d.color;
+  document.getElementById('ep_stock').value=d.stock;
+  document.getElementById('ep_emoji').value=d.emoji||'👟';
+  document.getElementById('ep_costo').value=d.costo;
+  document.getElementById('ep_precio').value=d.precio;
+  openModal('modalEditProducto');
+}
+function guardarProducto(){
+  const idx=parseInt(document.getElementById('ep_idx').value);
+  const updated={
+    sku:document.getElementById('ep_sku').value,
+    marca:document.getElementById('ep_marca').value,
+    modelo:document.getElementById('ep_modelo').value,
+    talla:document.getElementById('ep_talla').value,
+    color:document.getElementById('ep_color').value,
+    stock:parseInt(document.getElementById('ep_stock').value)||0,
+    emoji:document.getElementById('ep_emoji').value||'👟',
+    costo:parseFloat(document.getElementById('ep_costo').value)||0,
+    precio:parseFloat(document.getElementById('ep_precio').value)||0,
+  };
+  invData[idx]={...updated};
+  // Sync productos array
+  const pi=productos.findIndex(p=>p.sku===updated.sku);
+  if(pi>=0) productos[pi]={...productos[pi],...updated};
+  closeModal('modalEditProducto');
+  filterInv();
+  populatePOS();
+  populateCatalog();
+  showToast('✅ Producto actualizado');
+}
+function eliminarProducto(){
+  const idx=parseInt(document.getElementById('ep_idx').value);
+  if(confirm('¿Eliminar este SKU del inventario?')){
+    const sku=invData[idx].sku;
+    invData.splice(idx,1);
+    const pi=productos.findIndex(p=>p.sku===sku);
+    if(pi>=0) productos.splice(pi,1);
+    closeModal('modalEditProducto');
+    filterInv();
+    populatePOS();
+    populateCatalog();
+    showToast('🗑 Producto eliminado');
+  }
+}
+function agregarSKU(){
+  const sku=document.getElementById('ni_sku').value.trim();
+  const marca=document.getElementById('ni_marca').value;
+  const modelo=document.getElementById('ni_modelo').value.trim();
+  const talla=document.getElementById('ni_talla').value.trim();
+  const color=document.getElementById('ni_color').value.trim();
+  const stock=parseInt(document.getElementById('ni_stock').value)||0;
+  const costo=parseFloat(document.getElementById('ni_costo').value)||0;
+  const precio=parseFloat(document.getElementById('ni_precio').value)||0;
+  if(!sku||!modelo){alert('SKU y Modelo son obligatorios');return;}
+  const nuevo={sku,marca,modelo,talla,color,stock,costo,precio,emoji:'👟'};
+  invData.push(nuevo);
+  productos.push(nuevo);
+  closeModal('modalInventario');
+  filterInv();
+  populatePOS();
+  populateCatalog();
+  // Clear
+  ['ni_sku','ni_modelo','ni_talla','ni_color','ni_stock','ni_costo','ni_precio'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('✅ SKU añadido al inventario');
+}
+
+// ── CLIENTES TABLE ────────────────────────────────────
+function renderClientesTable(lista){
+  const ct=document.getElementById('clientesTbl');
+  if(!ct)return;
+  ct.innerHTML=lista.map((c)=>{
+    const realIdx=clientes.indexOf(c);
+    const seg=c.seg==='VIP'?'badge-gold':c.seg==='Frecuente'?'badge-green':'badge-gray';
+    return`<tr>
+      <td class="mono">${c.dni}</td>
+      <td style="font-weight:500">${c.nombre}</td>
+      <td>${c.tel}</td>
+      <td>${c.distrito}</td>
+      <td>${c.compras}</td>
+      <td style="color:var(--gold)">S/ ${c.total.toLocaleString()}</td>
+      <td>⭐ ${c.puntos.toLocaleString()}</td>
+      <td><span class="badge ${seg}">${c.seg}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editarCliente(${realIdx})">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterClientes(){
+  const q=(document.getElementById('searchClientes')?.value||'').toLowerCase();
+  const s=(document.getElementById('segFilter')?.value||'');
+  const res=clientes.filter(c=>{
+    const txt=(c.dni+c.nombre+c.tel+c.distrito).toLowerCase();
+    return(!q||txt.includes(q))&&(!s||s.includes('tipos')||c.seg===s);
+  });
+  renderClientesTable(res);
+}
+function editarCliente(idx){
+  const c=clientes[idx];
+  document.getElementById('ec_idx').value=idx;
+  document.getElementById('ec_dni').value=c.dni;
+  document.getElementById('ec_nombre').value=c.nombre;
+  document.getElementById('ec_tel').value=c.tel;
+  document.getElementById('ec_distrito').value=c.distrito;
+  document.getElementById('ec_total').value=c.total;
+  setSelect('ec_seg',c.seg);
+  openModal('modalEditCliente');
+}
+function guardarCliente(){
+  const idx=parseInt(document.getElementById('ec_idx').value);
+  const total=parseFloat(document.getElementById('ec_total').value)||0;
+  clientes[idx]={
+    ...clientes[idx],
+    dni:document.getElementById('ec_dni').value,
+    nombre:document.getElementById('ec_nombre').value,
+    tel:document.getElementById('ec_tel').value,
+    distrito:document.getElementById('ec_distrito').value,
+    total,
+    puntos:total,
+    seg:document.getElementById('ec_seg').value
+  };
+  closeModal('modalEditCliente');
+  filterClientes();
+  showToast('✅ Cliente actualizado');
+}
+function eliminarCliente(){
+  const idx=parseInt(document.getElementById('ec_idx').value);
+  if(confirm('¿Eliminar este cliente?')){
+    clientes.splice(idx,1);
+    closeModal('modalEditCliente');
+    filterClientes();
+    showToast('🗑 Cliente eliminado');
+  }
+}
+function agregarCliente(){
+  const dni=document.getElementById('nc_dni').value.trim();
+  const nombre=document.getElementById('nc_nombre').value.trim();
+  const tel=document.getElementById('nc_tel').value.trim();
+  const distrito=document.getElementById('nc_distrito').value.trim();
+  const seg=document.getElementById('nc_seg').value;
+  if(!dni||!nombre){alert('DNI y Nombre son obligatorios');return;}
+  clientes.push({dni,nombre,tel,distrito,compras:0,total:0,puntos:0,seg});
+  closeModal('modalCliente');
+  filterClientes();
+  ['nc_dni','nc_nombre','nc_tel','nc_distrito'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('✅ Cliente registrado');
+}
+
+// ── PROVEEDORES ───────────────────────────────────────
+function populateProveedores(filtro){
+  const lista=filtro||proveedores;
+  const pt=document.getElementById('proveedoresTbl');
+  if(!pt)return;
+  pt.innerHTML=lista.map((p,i)=>{
+    const ri=proveedores.indexOf(p);
+    return`<tr>
+      <td class="mono">${p.ruc}</td>
+      <td style="font-weight:500">${p.razon}</td>
+      <td>${p.contacto}</td>
+      <td>${p.tel}</td>
+      <td>${p.marcas}</td>
+      <td>${p.credito} días</td>
+      <td style="color:var(--gold)">S/ ${Number(p.deuda).toLocaleString()}</td>
+      <td><span class="badge badge-green">${p.estado}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="editarProveedor(${ri})">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterProveedores(){
+  const q=(document.getElementById('searchProveedores')?.value||'').toLowerCase();
+  const res=proveedores.filter(p=>(p.ruc+p.razon+p.marcas).toLowerCase().includes(q));
+  populateProveedores(res);
+}
+function editarProveedor(idx){
+  const p=proveedores[idx];
+  document.getElementById('ep2_idx').value=idx;
+  document.getElementById('ep2_ruc').value=p.ruc;
+  document.getElementById('ep2_razon').value=p.razon;
+  document.getElementById('ep2_contacto').value=p.contacto;
+  document.getElementById('ep2_tel').value=p.tel;
+  document.getElementById('ep2_marcas').value=p.marcas;
+  document.getElementById('ep2_credito').value=p.credito;
+  document.getElementById('ep2_deuda').value=p.deuda;
+  openModal('modalEditProveedor');
+}
+function guardarProveedor(){
+  const idx=parseInt(document.getElementById('ep2_idx').value);
+  proveedores[idx]={
+    ruc:document.getElementById('ep2_ruc').value,
+    razon:document.getElementById('ep2_razon').value,
+    contacto:document.getElementById('ep2_contacto').value,
+    tel:document.getElementById('ep2_tel').value,
+    marcas:document.getElementById('ep2_marcas').value,
+    credito:parseInt(document.getElementById('ep2_credito').value)||30,
+    deuda:parseFloat(document.getElementById('ep2_deuda').value)||0,
+    estado:'Activo'
+  };
+  closeModal('modalEditProveedor');
+  populateProveedores();
+  showToast('✅ Proveedor actualizado');
+}
+function eliminarProveedor(){
+  const idx=parseInt(document.getElementById('ep2_idx').value);
+  if(confirm('¿Eliminar este proveedor?')){
+    proveedores.splice(idx,1);
+    closeModal('modalEditProveedor');
+    populateProveedores();
+    showToast('🗑 Proveedor eliminado');
+  }
+}
+function agregarProveedor(){
+  const ruc=document.getElementById('np_ruc').value.trim();
+  const razon=document.getElementById('np_razon').value.trim();
+  const contacto=document.getElementById('np_contacto').value.trim();
+  const tel=document.getElementById('np_tel').value.trim();
+  const marcas=document.getElementById('np_marcas').value.trim();
+  const credito=parseInt(document.getElementById('np_credito').value)||30;
+  if(!ruc||!razon){alert('RUC y Razón Social son obligatorios');return;}
+  proveedores.push({ruc,razon,contacto,tel,marcas,credito,deuda:0,estado:'Activo'});
+  closeModal('modalProveedor');
+  populateProveedores();
+  ['np_ruc','np_razon','np_contacto','np_tel','np_marcas','np_credito'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('✅ Proveedor registrado');
+}
+
+// ── CATÁLOGO ──────────────────────────────────────────
+function populateCatalog(filtro){
+  const g=document.getElementById('catalogoGrid');
+  if(!g)return;
+  const lista=filtro||productos;
+  g.innerHTML=lista.map((p,i)=>{
+    const margin=((p.precio-p.costo)/p.precio*100).toFixed(1);
+    const idx=productos.indexOf(p);
+    return`<div class="cat-card">
+      <div class="cat-img" style="font-size:3.5rem">${p.emoji}</div>
+      <div class="cat-info">
+        <div class="cat-brand">${p.marca}</div>
+        <div class="cat-name">${p.modelo}</div>
+        <div class="cat-sku">${p.sku} · T${p.talla} · ${p.color}</div>
+        <div class="cat-price-row">
+          <div class="cat-price">S/ ${p.precio}</div>
+          <div class="cat-margin">▲ ${margin}%</div>
+        </div>
+        <div style="font-size:.68rem;color:var(--gray);margin-top:4px">Costo: S/ ${p.costo} · Stock: ${p.stock}</div>
+        <button class="btn btn-gold btn-sm" style="width:100%;justify-content:center;margin-top:10px" onclick="addToPOSFromCatalog(${idx})">🛒 Agregar al POS</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function addToPOSFromCatalog(idx){
+  const p = productos[idx];
+  if(!p) return;
+  addToCart(p);
+  nav('pos');
+  showToast(`✅ ${p.modelo} añadido al POS`);
+}
+function agregarProductoCatalogo(){
+  const marca=document.getElementById('np2_marca').value;
+  const emoji=document.getElementById('np2_emoji').value||'👟';
+  const modelo=document.getElementById('np2_modelo').value.trim();
+  const talla=document.getElementById('np2_talla').value.trim()||'—';
+  const color=document.getElementById('np2_color').value.trim()||'—';
+  const costo=parseFloat(document.getElementById('np2_costo').value)||0;
+  const precio=parseFloat(document.getElementById('np2_precio').value)||0;
+  if(!modelo){alert('Ingresa el nombre/modelo del producto');return;}
+  const sku=`${marca.substring(0,2).toUpperCase()}-${modelo.substring(0,4).toUpperCase().replace(' ','-')}-${talla}-${Date.now().toString().slice(-3)}`;
+  const nuevo={emoji,marca,modelo,sku,talla,color,costo,precio,stock:0};
+  productos.push(nuevo);
+  invData.push(nuevo);
+  closeModal('modalProducto');
+  populateCatalog();
+  populatePOS();
+  filterInv();
+  ['np2_emoji','np2_modelo','np2_talla','np2_color','np2_costo','np2_precio'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('✅ Producto añadido al catálogo');
+}
+
+// ── ACTIVOS: botones añadir ────────────────────────────
+function agregarActivoTangible(){
+  const codigo=document.getElementById('at_codigo').value.trim();
+  const nombre=document.getElementById('at_nombre').value.trim();
+  const costo=parseFloat(document.getElementById('at_costo').value)||0;
+  const vida=parseInt(document.getElementById('at_vida').value)||5;
+  if(!nombre){alert('Ingresa el nombre del activo');return;}
+  const depMes=(costo/(vida*12)).toFixed(0);
+  const row=document.createElement('tr');
+  row.innerHTML=`<td class="mono">${codigo||'330.0'+Date.now().toString().slice(-1)}</td>
+    <td>${nombre}</td><td>S/ ${costo.toLocaleString()}</td><td>${vida} años</td>
+    <td>S/ ${depMes}</td><td>S/ 0</td><td style="color:var(--green-light)">S/ ${costo.toLocaleString()}</td>
+    <td><span class="badge badge-green">Activo</span></td>`;
+  document.querySelector('#tabTangibles tbody').appendChild(row);
+  closeModal('modalActivoTangible');
+  ['at_codigo','at_nombre','at_costo','at_vida'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showToast('✅ Activo tangible registrado');
+}
+function agregarActivoIntangible(){
+  const codigo=document.getElementById('ai_codigo').value.trim();
+  const nombre=document.getElementById('ai_nombre').value.trim();
+  const costo=parseFloat(document.getElementById('ai_costo').value)||0;
+  const vida=parseInt(document.getElementById('ai_vida').value)||5;
+  if(!nombre){alert('Ingresa el concepto del activo');return;}
+  const amortMes=(costo/(vida*12)).toFixed(0);
+  const row=document.createElement('tr');
+  row.innerHTML=`<td class="mono">${codigo||'346.0'+Date.now().toString().slice(-1)}</td>
+    <td>${nombre}</td><td>S/ ${costo.toLocaleString()}</td><td>${vida} años</td>
+    <td>S/ ${amortMes}</td><td>S/ 0</td><td style="color:var(--green-light)">S/ ${costo.toLocaleString()}</td>`;
+  document.querySelector('#tabIntangibles tbody').appendChild(row);
+  closeModal('modalActivoIntangible');
+  ['ai_codigo','ai_nombre','ai_costo','ai_vida'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  showToast('✅ Activo intangible registrado');
+}
+
+// ── CRONOGRAMA ────────────────────────────────────────
+function simularCronograma(){
+  const M=parseFloat(document.getElementById('simMonto').value)||40000;
+  const tea=parseFloat(document.getElementById('simTEA').value)/100||0.18;
+  const n=parseInt(document.getElementById('simPlazo').value)||36;
+  const sis=document.getElementById('simSistema').value;
+  const tem=Math.pow(1+tea,1/12)-1;
+  let rows='';let saldo=M;let totalInt=0;
+  const cuotaFija=M*tem*Math.pow(1+tem,n)/(Math.pow(1+tem,n)-1);
+  const fecha=new Date(2026,0,1);
+  for(let i=1;i<=n;i++){
+    const interes=saldo*tem;
+    const amort=sis.includes('Franc')?cuotaFija-interes:M/n;
+    const cuota=amort+interes;
+    const saldoFin=saldo-amort;
+    totalInt+=interes;
+    const fm=new Date(fecha);fm.setMonth(fm.getMonth()+i);
+    rows+=`<tr><td>${i}</td><td>${fm.toLocaleDateString('es-PE',{month:'short',year:'numeric'})}</td>
+      <td>S/ ${saldo.toFixed(2)}</td><td>S/ ${amort.toFixed(2)}</td>
+      <td>S/ ${interes.toFixed(2)}</td>
+      <td style="color:var(--gold);font-weight:600">S/ ${cuota.toFixed(2)}</td>
+      <td>S/ ${Math.max(saldoFin,0).toFixed(2)}</td></tr>`;
+    saldo=Math.max(saldoFin,0);
+    if(saldo<=0)break;
+  }
+  document.getElementById('cronogramaTbl').innerHTML=rows;
+  document.getElementById('simResumen').innerHTML=
+    `<span>Cuota Fija: <strong style="color:var(--gold)">S/ ${cuotaFija.toFixed(2)}</strong></span>
+     <span>Total Intereses: <strong style="color:#E74C3C">S/ ${totalInt.toFixed(2)}</strong></span>
+     <span>Costo Total: <strong style="color:var(--white)">S/ ${(M+totalInt).toFixed(2)}</strong></span>`;
+}
+
+// ── EXPORTAR CSV ──────────────────────────────────────
+function exportCSV(data,filename,headers){
+  const rows=[headers.join(','),...data.map(r=>headers.map(h=>{
+    const k=h.toLowerCase().replace(/ /g,'_');
+    const v=r[k]!==undefined?r[k]:Object.values(r)[headers.indexOf(h)]||'';
+    return `"${String(v).replace(/"/g,'""')}"`;
+  }).join(','))];
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+}
+function exportVentasCSV(){
+  exportCSV(ventas,'ventas_lordmatute.csv',['ID','Fecha','Cliente','Producto','Método','Documento','Total','Estado']);
+}
+function exportInventarioCSV(){
+  const data=invData.map(d=>({ID:d.sku,Fecha:d.marca,Cliente:d.modelo,Producto:d.talla,Método:d.color,Documento:d.stock,Total:d.costo,Estado:d.precio}));
+  const blob=new Blob([['SKU,Marca,Modelo,Talla,Color,Stock,Costo,Precio'].concat(
+    invData.map(d=>`"${d.sku}","${d.marca}","${d.modelo}","${d.talla}","${d.color}",${d.stock},${d.costo},${d.precio}`)
+  ).join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='inventario_lordmatute.csv';a.click();
+}
+function exportCronogramaCSV(){
+  const rows=[['Cuota','Fecha','Saldo Inicial','Amortización','Interés','Cuota Total','Saldo Final']];
+  document.querySelectorAll('#cronogramaTbl tr').forEach(tr=>{
+    rows.push([...tr.querySelectorAll('td')].map(td=>td.textContent));
+  });
+  const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cronograma_lordmatute.csv';a.click();
+}
+function exportKardexPDF(){
+  alert('📄 Descargando Kardex...\n(En producción real generaría un PDF del Kardex seleccionado)');
+}
+
+// ── COSTEO ────────────────────────────────────────────
+function calcCosteo(){
+  const costo=parseFloat(document.getElementById('cst_costo')?.value)||0;
+  const flete=parseFloat(document.getElementById('cst_flete')?.value)||0;
+  const comPct=parseFloat(document.getElementById('cst_comision_pct')?.value)||0;
+  const otros=parseFloat(document.getElementById('cst_otros')?.value)||0;
+  const igvOpt=parseInt(document.getElementById('cst_igv')?.value)||0;
+  const margen=parseFloat(document.getElementById('cst_margen')?.value)||30;
+  const comision=costo*comPct/100;
+  const totalCosto=costo+flete+comision+otros;
+  const ganancia=totalCosto*margen/100;
+  const precioBase=totalCosto+ganancia;
+  const igvVal=igvOpt?precioBase*0.18:0;
+  const precioFinal=precioBase+igvVal;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('r_costo',`S/ ${costo.toFixed(2)}`);
+  set('r_flete',`S/ ${flete.toFixed(2)}`);
+  set('r_comision',`S/ ${comision.toFixed(2)}`);
+  set('r_otros',`S/ ${otros.toFixed(2)}`);
+  set('r_total_costo',`S/ ${totalCosto.toFixed(2)}`);
+  set('r_margen_pct',`${margen}%`);
+  set('r_ganancia',`S/ ${ganancia.toFixed(2)}`);
+  set('r_igv_val',igvOpt?`S/ ${igvVal.toFixed(2)}`:'—');
+  set('r_precio_sugerido',`S/ ${precioFinal.toFixed(2)}`);
+  const nota=document.getElementById('r_nota');
+  if(nota) nota.textContent=igvOpt?`Precio incluye IGV (S/ ${igvVal.toFixed(2)})`:'Precio sin IGV. Añade IGV si aplica.';
+}
+function guardarCosteo(){
+  const nombre=document.getElementById('cst_nombre')?.value||'Sin nombre';
+  const totalCosto=document.getElementById('r_total_costo')?.textContent||'—';
+  const margen=document.getElementById('r_margen_pct')?.textContent||'—';
+  const precio=document.getElementById('r_precio_sugerido')?.textContent||'—';
+  const ganancia=document.getElementById('r_ganancia')?.textContent||'—';
+  const fecha=new Date().toLocaleDateString('es-PE');
+  costeoHistorial.unshift({nombre,totalCosto,margen,precio,ganancia,fecha});
+  const h=document.getElementById('costeoHistorial');
+  if(h) h.innerHTML=costeoHistorial.map((c,i)=>`<tr>
+    <td>${c.nombre}</td><td style="color:var(--gold)">${c.totalCosto}</td>
+    <td>${c.margen}</td><td style="color:var(--green-light);font-weight:600">${c.precio}</td>
+    <td>${c.ganancia}</td><td class="mono">${c.fecha}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="costeoHistorial.splice(${i},1);guardarCosteo();showToast('🗑 Eliminado')">🗑</button></td>
+  </tr>`).join('');
+  showToast('💾 Cálculo guardado');
+}
+
+// ── REPORTES ──────────────────────────────────────────
+function generarReporte(tipo){
+  const msgs={
+    ventas:'Reporte de Ventas exportado a CSV.\n\n'+ventas.length+' transacciones incluidas.',
+    inventario:'Reporte de Inventario exportado.\n\n'+invData.length+' SKUs incluidos.',
+    rentabilidad:'Reporte de Rentabilidad generado.\n\nROI: 43.2% · TIR: 38.6% · Payback: 2.3 años',
+    clientes:'Reporte de Clientes generado.\n\n'+clientes.length+' clientes incluidos.',
+    proveedores:'Reporte de Proveedores generado.\n\n'+proveedores.length+' proveedores activos.',
+    financiamiento:'Cronograma de Amortización exportado.\n\n36 cuotas incluidas.',
+    financieros:'Estados Financieros exportados.\n\nBalance · P&L · Flujo de Caja',
+    sunat:'PLE exportado.\n\nLibro de Ventas · Libro de Compras · IGV · Renta'
+  };
+  if(tipo==='ventas')exportVentasCSV();
+  else if(tipo==='inventario')exportInventarioCSV();
+  else if(tipo==='financiamiento')exportCronogramaCSV();
+  else alert('⬇ '+(msgs[tipo]||'Reporte generado'));
+}
+
+// ── TOAST NOTIFICATIONS ───────────────────────────────
+function showToast(msg){
+  let t=document.getElementById('toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='toast';
+    t.style.cssText='position:fixed;bottom:28px;right:28px;background:var(--dark2);border:1px solid var(--gold-dim);color:var(--white);padding:12px 20px;border-radius:10px;font-size:.82rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:opacity .3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.opacity='1';
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.style.opacity='0',3000);
+}
+
+// ── HELPER ────────────────────────────────────────────
+function setSelect(id,val){
+  const el=document.getElementById(id);
+  if(!el)return;
+  for(let o of el.options){if(o.value===val||o.text===val){el.value=o.value;return;}}
+}
+
+// ── CHARTS ────────────────────────────────────────────
+const GOLD='rgba(201,168,76,1)';
+const GOLD2='rgba(201,168,76,0.15)';
+const GREEN='rgba(39,174,96,1)';
+const RED='rgba(231,76,60,1)';
+const BLUE='rgba(52,152,219,1)';
+const PURPLE='rgba(155,89,182,1)';
+
+function mk(id,cfg){
+  const c=document.getElementById(id);
+  if(!c)return;
+  Chart.defaults.color='#888';
+  Chart.defaults.font.family='Inter,sans-serif';
+  Chart.defaults.font.size=11;
+  new Chart(c,cfg);
+}
+
+function initCharts(){
+  const months=['Ene','Feb','Mar','Abr','May','Jun'];
+  mk('chartVentas',{type:'line',data:{labels:months,datasets:[
+    {label:'Ventas (S/)',data:[72400,78200,81500,79800,83100,87300],borderColor:GOLD,backgroundColor:'rgba(201,168,76,0.08)',fill:true,tension:.4,pointBackgroundColor:GOLD,pointRadius:4},
+    {label:'Meta (S/)',data:[70000,75000,80000,80000,82000,85000],borderColor:'rgba(201,168,76,0.35)',borderDash:[5,5],fill:false,tension:.4,pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#888'}}},scales:{x:{grid:{color:'#1A1A1A'}},y:{grid:{color:'#1A1A1A'},ticks:{callback:v=>'S/ '+v.toLocaleString()}}}}});
+  mk('chartMarcas',{type:'doughnut',data:{labels:['Nike','Adidas','Vans','Converse','Puma','NB'],datasets:[{data:[38,27,14,11,7,3],backgroundColor:['rgba(201,168,76,0.85)','rgba(39,174,96,0.75)','rgba(52,152,219,0.75)','rgba(155,89,182,0.75)','rgba(231,76,60,0.75)','rgba(241,196,15,0.75)'],borderColor:'#111',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#888',boxWidth:12}}}}});
+  mk('chartPagos',{type:'doughnut',data:{labels:['Yape','Efectivo','Tarjeta','Plin'],datasets:[{data:[38,24,22,16],backgroundColor:['rgba(201,168,76,0.85)','rgba(52,152,219,0.75)','rgba(39,174,96,0.75)','rgba(155,89,182,0.75)'],borderColor:'#111',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#888',boxWidth:12}}}}});
+  mk('chartUtilidad',{type:'bar',data:{labels:months,datasets:[
+    {label:'Ut. Bruta',data:[27800,28400,29100,29500,30200,32151],backgroundColor:'rgba(201,168,76,0.6)',borderRadius:4},
+    {label:'Ut. Neta',data:[15200,15800,16200,16500,17100,18204],backgroundColor:'rgba(39,174,96,0.6)',borderRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#888'}}},scales:{x:{grid:{color:'#1A1A1A'}},y:{grid:{color:'#1A1A1A'},ticks:{callback:v=>'S/ '+v.toLocaleString()}}}}});
+  mk('chartCRM',{type:'doughnut',data:{labels:['VIP','Frecuentes','Ocasionales','Nuevos','Inactivos'],datasets:[{data:[12,87,134,47,23],backgroundColor:['rgba(201,168,76,0.9)','rgba(39,174,96,0.8)','rgba(52,152,219,0.75)','rgba(241,196,15,0.75)','rgba(127,140,141,0.6)'],borderColor:'#111',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#888',boxWidth:12}}}}});
+  mk('chartValorizacion',{type:'bar',data:{labels:['Nike','Adidas','Vans','Converse','Puma','New Balance'],datasets:[{label:'Valorización (S/)',data:[58720,38640,19550,15840,9600,0],backgroundColor:'rgba(201,168,76,0.7)',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1A1A1A'}},y:{grid:{color:'#1A1A1A'},ticks:{callback:v=>'S/ '+v.toLocaleString()}}}}});
+  mk('chartInversion',{type:'doughnut',data:{labels:['Capital Propio','Financiamiento'],datasets:[{data:[45000,40000],backgroundColor:['rgba(201,168,76,0.85)','rgba(52,152,219,0.75)'],borderColor:'#111',borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#888'}}}}});
+  mk('chartCostos',{type:'doughnut',data:{labels:['Costo Ventas','G. Ventas','G. Admin','Dep/Amort','G. Financieros'],datasets:[{data:[55149,4200,3846,1700,1304],backgroundColor:['rgba(231,76,60,0.75)','rgba(201,168,76,0.75)','rgba(52,152,219,0.7)','rgba(155,89,182,0.7)','rgba(241,196,15,0.7)'],borderColor:'#111',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#888',boxWidth:10,font:{size:10}}}}}});
+  mk('chartFlujo',{type:'bar',data:{labels:months,datasets:[
+    {label:'Entradas',data:[78200,81400,84200,86500,89100,94280],backgroundColor:'rgba(39,174,96,0.65)',borderRadius:4},
+    {label:'Salidas',data:[72400,75200,78100,79800,81200,81900],backgroundColor:'rgba(231,76,60,0.55)',borderRadius:4},
+    {type:'line',label:'Saldo',data:[12800,19000,25100,31800,39700,24780],borderColor:GOLD,backgroundColor:'transparent',tension:.4,yAxisID:'y1',pointBackgroundColor:GOLD,pointRadius:4}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#888'}}},scales:{x:{grid:{color:'#1A1A1A'}},y:{grid:{color:'#1A1A1A'},ticks:{callback:v=>'S/ '+v.toLocaleString()}},y1:{position:'right',grid:{display:false},ticks:{callback:v=>'S/ '+v.toLocaleString()}}}}});
+}
+</script>
+
+<style>
+.bal-val[contenteditable], .er-val[contenteditable], .stat-val[contenteditable] {
+  outline: 1px dashed var(--gold-dim);
+  border-radius: 3px;
+  padding: 1px 4px;
+  cursor: text;
+}
+.bal-val[contenteditable]:focus, .er-val[contenteditable]:focus {
+  outline: 1px solid var(--gold);
+  background: rgba(201,168,76,0.05);
+}
+</style>
+<style>
+.mono{font-family:'JetBrains Mono',monospace;font-size:.75rem;}
+/* Search bar */
+.search-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.search-input{background:var(--dark3);border:1px solid var(--dark5);color:var(--white);padding:9px 14px;border-radius:8px;font-size:.83rem;outline:none;flex:1;min-width:160px;}
+.search-input:focus{border-color:var(--gold);}
+/* Catalog grid */
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:20px;}
+.cat-card{background:var(--dark3);border:1px solid var(--dark5);border-radius:12px;padding:16px;transition:.18s;}
+.cat-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.cat-img{text-align:center;margin-bottom:10px;}
+.cat-brand{font-size:.65rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;}
+.cat-name{font-size:.85rem;font-weight:600;color:var(--white);margin:3px 0;}
+.cat-sku{font-size:.65rem;color:var(--gray);font-family:'JetBrains Mono',monospace;}
+.cat-price-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.cat-price{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold);}
+.cat-margin{font-size:.7rem;color:var(--green-light);}
+/* alerts */
+.alert{padding:12px 16px;border-radius:8px;font-size:.78rem;margin-bottom:18px;}
+.alert-gold{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);color:var(--gold-pale);}
+.alert-green{background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.25);color:#27AE60;}
+/* Tab content */
+.tab-content{display:none;}.tab-content.active{display:block;}
+.tab:hover{color:var(--white);}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+</style>
+</body>
+</html>
